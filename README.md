@@ -31,5 +31,12 @@ npm.cmd run dev:web
 
 Acesse `http://localhost:3000`.
 
-O backend, PostgreSQL, visão computacional e integração com ESP32-CAM serão implementados em etapas posteriores.
+## Executar o backend
 
+```powershell
+npm.cmd run dev:backend
+```
+
+A API será iniciada em `http://localhost:3333`. Para verificar seu estado, acesse `GET http://localhost:3333/api/health`.
+
+PostgreSQL, visão computacional e integração com ESP32-CAM serão implementados em etapas posteriores.

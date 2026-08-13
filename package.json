@@ -10,11 +10,14 @@
   "scripts": {
     "dev:web": "npm run dev --workspace @motiva/web",
     "build:web": "npm run build --workspace @motiva/web",
-    "start:web": "npm run start --workspace @motiva/web"
+    "start:web": "npm run start --workspace @motiva/web",
+    "dev:backend": "npm run dev --workspace @motiva/backend",
+    "build:backend": "npm run build --workspace @motiva/backend",
+    "start:backend": "npm run start --workspace @motiva/backend",
+    "typecheck:backend": "npm run typecheck --workspace @motiva/backend"
   },
   "engines": {
     "node": ">=20.9.0"
   },
   "packageManager": "npm@11.9.0"
 }
-
