@@ -4,8 +4,8 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Monitoramento de Vegetação",
-  description: "Plataforma acadêmica de monitoramento de vegetação rodoviária.",
+  title: "Visão Geral | Monitoramento Motiva",
+  description: "Dashboard de monitoramento de vegetação rodoviária.",
 };
 
 type PropriedadesLayoutRaiz = Readonly<{

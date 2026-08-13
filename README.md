@@ -29,7 +29,7 @@ npm.cmd install
 npm.cmd run dev:web
 ```
 
-Acesse `http://localhost:3000`.
+Acesse `http://localhost:3000`. O dashboard utiliza `http://localhost:3333` como URL padrão da API. Para utilizar outro endereço, copie `web/.env.example` para `web/.env.local` e altere `URL_API`.
 
 ## Executar o backend
 
