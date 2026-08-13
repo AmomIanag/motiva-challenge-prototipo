@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsx watch src/servidor.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "node dist/servidor.js",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -37,6 +37,10 @@ Acesse `http://localhost:3000`.
 npm.cmd run dev:backend
 ```
 
-A API será iniciada em `http://localhost:3333`. Para verificar seu estado, acesse `GET http://localhost:3333/api/health`.
+A API será iniciada em `http://localhost:3333` e disponibiliza atualmente:
+
+- `GET /api/saude`: estado da API.
+- `GET /api/leituras`: histórico mockado de leituras.
+- `GET /api/leituras/ultima`: leitura mockada mais recente.
 
 PostgreSQL, visão computacional e integração com ESP32-CAM serão implementados em etapas posteriores.

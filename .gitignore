@@ -1,13 +1,13 @@
-# Dependencies
+# Dependencias
 node_modules/
 
-# Build outputs
+# Build
 .next/
 dist/
 coverage/
 *.tsbuildinfo
 
-# Environment variables
+# Variaveis ambiente
 .env
 .env.*
 !.env.example
@@ -16,13 +16,13 @@ coverage/
 *.log
 npm-debug.log*
 
-# Python (future vision module)
+# Python (visao comp. futuramente)
 .venv/
 venv/
 __pycache__/
 *.py[cod]
 
-# Editors and operating systems
+# Editor/ide e operating system
 .vscode/
 .idea/
 .DS_Store

@@ -8,15 +8,16 @@ export const metadata: Metadata = {
   description: "Plataforma acadêmica de monitoramento de vegetação rodoviária.",
 };
 
-type RootLayoutProps = Readonly<{
+type PropriedadesLayoutRaiz = Readonly<{
   children: ReactNode;
 }>;
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default function LayoutRaiz({
+  children: conteudo,
+}: PropriedadesLayoutRaiz) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>{conteudo}</body>
     </html>
   );
 }
-

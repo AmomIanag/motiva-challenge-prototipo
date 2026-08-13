@@ -1,8 +1,8 @@
-export default function HomePage() {
+export default function PaginaInicial() {
   return (
     <main>
       <section>
-        <p className="eyebrow">Projeto motiva</p>
+        <p className="sobretitulo">Projeto motiva</p>
         <h1>Monitoramento de vegetação rodoviária</h1>
         <p>
           Estrutura inicial da plataforma.
@@ -11,4 +11,3 @@ export default function HomePage() {
     </main>
   );
 }
-
