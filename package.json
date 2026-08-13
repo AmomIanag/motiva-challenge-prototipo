@@ -1,0 +1,20 @@
+{
+  "name": "motiva-esp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plataforma acadêmica para monitoramento de vegetação às margens de rodovias.",
+  "workspaces": [
+    "web",
+    "backend"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace @motiva/web",
+    "build:web": "npm run build --workspace @motiva/web",
+    "start:web": "npm run start --workspace @motiva/web"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "packageManager": "npm@11.9.0"
+}
+

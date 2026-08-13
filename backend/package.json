@@ -1,0 +1,20 @@
+{
+  "name": "@motiva/backend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "cors": "2.8.6",
+    "express": "5.2.1"
+  },
+  "devDependencies": {
+    "@types/cors": "2.8.19",
+    "@types/express": "5.0.6",
+    "@types/node": "24.13.3",
+    "tsx": "4.23.12",
+    "typescript": "7.0.2"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}
+
