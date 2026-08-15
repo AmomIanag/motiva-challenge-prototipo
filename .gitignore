@@ -25,6 +25,8 @@ backend/uploads/*
 venv/
 __pycache__/
 *.py[cod]
+vision/saida/*
+!vision/saida/.gitkeep
 
 # Editor/ide e operating system
 .vscode/
