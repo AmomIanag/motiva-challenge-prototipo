@@ -33,14 +33,39 @@ Acesse `http://localhost:3000`. O dashboard utiliza `http://localhost:3333` como
 
 ## Executar o backend
 
+Crie o arquivo local de ambiente a partir do exemplo:
+
+```powershell
+Copy-Item backend\.env.example backend\.env
+```
+
+Edite `backend/.env` e substitua `usuario` e `senha` pelas credenciais locais do PostgreSQL. Esse arquivo é ignorado pelo Git e não deve ser versionado.
+
+No pgAdmin, selecione o banco `motiva_esp`, abra o Query Tool e execute, nesta ordem:
+
+1. `backend/sql/criar-tabelas.sql` para criar a tabela e o índice;
+2. `backend/sql/inserir-dados-teste.sql` para inserir manualmente os três registros de demonstração.
+
+O seed é idempotente para os registros fornecidos e não é executado automaticamente pelo backend.
+
+Depois, inicie a API:
+
 ```powershell
 npm.cmd run dev:backend
 ```
 
 A API será iniciada em `http://localhost:3333` e disponibiliza atualmente:
 
-- `GET /api/saude`: estado da API.
-- `GET /api/leituras`: histórico mockado de leituras.
-- `GET /api/leituras/ultima`: leitura mockada mais recente.
+- `GET /api/saude`: estado da API e da conexão com PostgreSQL.
+- `GET /api/leituras`: histórico persistido de leituras.
+- `GET /api/leituras/ultima`: leitura persistida mais recente.
 
-PostgreSQL, visão computacional e integração com ESP32-CAM serão implementados em etapas posteriores.
+Para conferir os dados diretamente pelo pgAdmin, execute:
+
+```sql
+SELECT id, dispositivo_id, altura_cm, status, medido_em
+FROM leituras
+ORDER BY medido_em ASC, id ASC;
+```
+
+Visão computacional e integração com ESP32-CAM serão implementadas em etapas posteriores.
