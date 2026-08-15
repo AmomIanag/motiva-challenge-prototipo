@@ -5,7 +5,7 @@ Plataforma acadêmica para monitoramento de vegetação às margens de rodovias.
 ## Estrutura
 
 - `web/`: interface web em Next.js, React e TypeScript.
-- `backend/`: futura API REST em Express e TypeScript.
+- `backend/`: API REST em Express e TypeScript.
 - `vision/`: placeholder para o futuro módulo isolado em Python e OpenCV.
 
 O backend será independente das interfaces clientes para que a mesma API possa ser consumida pelo dashboard web e por futuros aplicativos mobile.
@@ -59,6 +59,25 @@ A API será iniciada em `http://localhost:3333` e disponibiliza atualmente:
 - `GET /api/saude`: estado da API e da conexão com PostgreSQL.
 - `GET /api/leituras`: histórico persistido de leituras.
 - `GET /api/leituras/ultima`: leitura persistida mais recente.
+- `POST /api/leituras/imagem`: recebimento de uma imagem JPEG ou PNG.
+
+## Testar o upload de imagem
+
+Envie uma imagem de até 5 MB no campo multipart `imagem`:
+
+```powershell
+curl.exe -X POST `
+  -F "imagem=@C:\caminho\foto-teste.jpg" `
+  http://localhost:3333/api/leituras/imagem
+```
+
+Teste uma requisição sem arquivo:
+
+```powershell
+curl.exe -X POST http://localhost:3333/api/leituras/imagem
+```
+
+As imagens válidas são armazenadas localmente em `backend/uploads/`. O conteúdo dessa pasta, exceto `.gitkeep`, é ignorado pelo Git.
 
 Para conferir os dados diretamente pelo pgAdmin, execute:
 

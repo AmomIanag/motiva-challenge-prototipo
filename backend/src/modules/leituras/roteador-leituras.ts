@@ -1,8 +1,38 @@
 import { Router } from "express";
 
+import {
+  ErroValidacaoImagem,
+  salvarImagem,
+} from "../imagens/armazenamento-imagem";
+import { receberImagem } from "../imagens/receber-imagem";
 import { buscarLeituras, buscarUltimaLeitura } from "./repositorio-leituras";
 
 export const roteadorLeituras = Router();
+
+roteadorLeituras.post("/imagem", receberImagem, async (requisicao, resposta) => {
+  const imagem = requisicao.file;
+
+  if (!imagem) {
+    resposta.status(400).json({ erro: "Nenhuma imagem foi enviada." });
+    return;
+  }
+
+  try {
+    const arquivo = await salvarImagem(imagem);
+    resposta.status(201).json({
+      mensagem: "Imagem recebida com sucesso.",
+      arquivo,
+    });
+  } catch (erro) {
+    if (erro instanceof ErroValidacaoImagem) {
+      resposta.status(415).json({ erro: erro.message });
+      return;
+    }
+
+    console.error("Erro ao salvar a imagem:", erro);
+    resposta.status(500).json({ erro: "Não foi possível salvar a imagem." });
+  }
+});
 
 roteadorLeituras.get("/", async (_requisicao, resposta) => {
   try {

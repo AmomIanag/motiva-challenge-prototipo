@@ -16,6 +16,10 @@ coverage/
 *.log
 npm-debug.log*
 
+# Imagens recebidas pela API
+backend/uploads/*
+!backend/uploads/.gitkeep
+
 # Python (visao comp. futuramente)
 .venv/
 venv/
