@@ -11,6 +11,7 @@ interface LinhaLeitura {
   status: StatusVegetacao;
   medido_em: Date;
   nome_imagem: string | null;
+  nome_imagem_diagnostico: string | null;
 }
 
 function mapearLinhaParaLeitura(linha: LinhaLeitura): LeituraVegetacao {
@@ -22,11 +23,19 @@ function mapearLinhaParaLeitura(linha: LinhaLeitura): LeituraVegetacao {
     imagemUrl: linha.nome_imagem
       ? `/uploads/${encodeURIComponent(linha.nome_imagem)}`
       : null,
+    imagemDiagnosticoUrl: linha.nome_imagem_diagnostico
+      ? `/uploads/${encodeURIComponent(linha.nome_imagem_diagnostico)}`
+      : null,
   };
 }
 
 const COLUNAS_LEITURA = `
-  dispositivo_id, altura_cm, status, medido_em, nome_imagem
+  dispositivo_id,
+  altura_cm,
+  status,
+  medido_em,
+  nome_imagem,
+  nome_imagem_diagnostico
 `;
 
 export async function buscarLeituras(): Promise<LeituraVegetacao[]> {
@@ -54,6 +63,7 @@ export async function buscarUltimaLeitura(): Promise<LeituraVegetacao | null> {
 export async function inserirLeitura(
   leitura: LeituraVegetacaoSemImagem,
   nomeImagem: string,
+  nomeImagemDiagnostico: string,
 ): Promise<LeituraVegetacao> {
   const resultado = await poolBancoDados.query<LinhaLeitura>(
     `
@@ -62,9 +72,10 @@ export async function inserirLeitura(
         altura_cm,
         status,
         medido_em,
-        nome_imagem
+        nome_imagem,
+        nome_imagem_diagnostico
       )
-      VALUES ($1, $2, $3, $4, $5)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING ${COLUNAS_LEITURA}
     `,
     [
@@ -73,6 +84,7 @@ export async function inserirLeitura(
       leitura.status,
       leitura.medidoEm,
       nomeImagem,
+      nomeImagemDiagnostico,
     ],
   );
 

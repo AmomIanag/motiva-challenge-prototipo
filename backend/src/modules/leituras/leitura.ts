@@ -8,9 +8,13 @@ export interface LeituraVegetacao {
   status: StatusVegetacao;
   medidoEm: string;
   imagemUrl: string | null;
+  imagemDiagnosticoUrl: string | null;
 }
 
-export type LeituraVegetacaoSemImagem = Omit<LeituraVegetacao, "imagemUrl">;
+export type LeituraVegetacaoSemImagem = Omit<
+  LeituraVegetacao,
+  "imagemUrl" | "imagemDiagnosticoUrl"
+>;
 
 export type EntradaLeituraVegetacao = Omit<
   LeituraVegetacaoSemImagem,

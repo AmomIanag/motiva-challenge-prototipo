@@ -1,10 +1,12 @@
 import { Router } from "express";
 
 import {
+  criarDestinoImagemDiagnostico,
   ErroValidacaoImagem,
   removerImagem,
   salvarImagem,
   type ArquivoImagemSalvo,
+  type DestinoImagemDiagnostico,
 } from "../imagens/armazenamento-imagem";
 import {
   ErroProcessamentoVisao,
@@ -52,6 +54,8 @@ function obterDispositivoId(valor: unknown): string {
 roteadorLeituras.post("/imagem", receberImagem, async (requisicao, resposta) => {
   const imagem = requisicao.file;
   let arquivoSalvo: ArquivoImagemSalvo | null = null;
+  let destinoDiagnostico: DestinoImagemDiagnostico | null = null;
+  let persistenciaConcluida = false;
 
   if (!imagem) {
     resposta.status(400).json({ erro: "Nenhuma imagem foi enviada." });
@@ -61,7 +65,11 @@ roteadorLeituras.post("/imagem", receberImagem, async (requisicao, resposta) => 
   try {
     const dispositivoId = obterDispositivoId(requisicao.body.dispositivoId);
     arquivoSalvo = await salvarImagem(imagem);
-    const medicao = await processarImagem(arquivoSalvo.caminhoAbsoluto);
+    destinoDiagnostico = criarDestinoImagemDiagnostico(arquivoSalvo.nome);
+    const medicao = await processarImagem(
+      arquivoSalvo.caminhoAbsoluto,
+      destinoDiagnostico.caminhoAbsoluto,
+    );
     const leituraClassificada = criarLeituraVegetacao({
       dispositivoId,
       alturaCm: medicao.alturaCm,
@@ -70,18 +78,27 @@ roteadorLeituras.post("/imagem", receberImagem, async (requisicao, resposta) => 
     const leitura = await inserirLeitura(
       leituraClassificada,
       arquivoSalvo.nome,
+      destinoDiagnostico.nome,
     );
+    persistenciaConcluida = true;
 
     resposta.status(201).json({
       mensagem: "Imagem processada com sucesso.",
       leitura,
     });
   } catch (erro) {
-    if (arquivoSalvo) {
-      try {
-        await removerImagem(arquivoSalvo.caminhoAbsoluto);
-      } catch (erroRemocao) {
-        console.error("Erro ao remover a imagem após a falha:", erroRemocao);
+    if (!persistenciaConcluida) {
+      const caminhosParaRemover = [
+        arquivoSalvo?.caminhoAbsoluto,
+        destinoDiagnostico?.caminhoAbsoluto,
+      ].filter((caminho): caminho is string => Boolean(caminho));
+
+      for (const caminho of caminhosParaRemover) {
+        try {
+          await removerImagem(caminho);
+        } catch (erroRemocao) {
+          console.error("Erro ao remover uma imagem após a falha:", erroRemocao);
+        }
       }
     }
 

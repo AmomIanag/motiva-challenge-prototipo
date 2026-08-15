@@ -24,16 +24,16 @@ vision\.venv\Scripts\python.exe vision\src\medir_vegetacao.py `
 
 A imagem anotada é gravada por padrão em `vision/saida/diagnostico.jpg`.
 
-Para integração com o backend, o mesmo script oferece uma saída estritamente estruturada e pode evitar a geração do diagnóstico:
+Para integração com o backend, o mesmo script oferece uma saída estritamente estruturada e aceita um caminho explícito para o diagnóstico:
 
 ```powershell
 vision\.venv\Scripts\python.exe vision\src\medir_vegetacao.py `
   --imagem "C:\Users\Amom\foto-teste.jpg" `
   --formato-json `
-  --sem-diagnostico
+  --saida "backend\uploads\exemplo-diagnostico.jpg"
 ```
 
-Esse modo retorna somente `alturaCm` e `escalaPixelsPorCm`. A classificação de risco permanece no backend TypeScript.
+Esse modo retorna somente `alturaCm` e `escalaPixelsPorCm` no terminal. No fluxo integrado, o backend gera um nome exclusivo para cada diagnóstico e não utiliza o arquivo global `vision/saida/diagnostico.jpg`. A classificação de risco permanece no backend TypeScript.
 
 ## Como funciona
 

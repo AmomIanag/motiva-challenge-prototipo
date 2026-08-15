@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { mkdir, rm, writeFile } from "node:fs/promises";
+import { join, parse } from "node:path";
 
 import {
   CONFIGURACAO_UPLOAD_IMAGEM,
@@ -20,6 +20,11 @@ export interface ArquivoImagemSalvo {
   caminhoAbsoluto: string;
   tipoMime: TipoMimePermitido;
   tamanhoBytes: number;
+}
+
+export interface DestinoImagemDiagnostico {
+  nome: string;
+  caminhoAbsoluto: string;
 }
 
 export class ErroValidacaoImagem extends Error {}
@@ -90,6 +95,18 @@ export async function salvarImagem(
   };
 }
 
+export function criarDestinoImagemDiagnostico(
+  nomeImagemOriginal: string,
+): DestinoImagemDiagnostico {
+  const nomeBase = parse(nomeImagemOriginal).name;
+  const nome = `${nomeBase}-diagnostico.jpg`;
+
+  return {
+    nome,
+    caminhoAbsoluto: join(DIRETORIO_UPLOADS, nome),
+  };
+}
+
 export async function removerImagem(caminhoAbsoluto: string): Promise<void> {
-  await unlink(caminhoAbsoluto);
+  await rm(caminhoAbsoluto, { force: true });
 }

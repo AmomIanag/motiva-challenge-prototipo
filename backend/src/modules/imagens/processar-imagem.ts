@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { access } from "node:fs/promises";
+import { access, stat } from "node:fs/promises";
 import { promisify } from "node:util";
 
 import { CONFIGURACAO_PROCESSAMENTO_VISAO } from "../../config/processamento-visao";
@@ -46,6 +46,7 @@ function validarResultado(
 
 export async function processarImagem(
   caminhoImagem: string,
+  caminhoImagemDiagnostico: string,
 ): Promise<ResultadoProcessamentoVisao> {
   try {
     await Promise.all([
@@ -70,7 +71,8 @@ export async function processarImagem(
         "--imagem",
         caminhoImagem,
         "--formato-json",
-        "--sem-diagnostico",
+        "--saida",
+        caminhoImagemDiagnostico,
       ],
       {
         encoding: "utf8",
@@ -88,6 +90,20 @@ export async function processarImagem(
     throw new ErroProcessamentoVisao(
       "processamento_falhou",
       "Não foi possível medir a vegetação na imagem.",
+      erro,
+    );
+  }
+
+  try {
+    const informacoesDiagnostico = await stat(caminhoImagemDiagnostico);
+
+    if (!informacoesDiagnostico.isFile() || informacoesDiagnostico.size === 0) {
+      throw new Error("O diagnóstico gerado está vazio.");
+    }
+  } catch (erro) {
+    throw new ErroProcessamentoVisao(
+      "resultado_invalido",
+      "O processamento não gerou a imagem de análise.",
       erro,
     );
   }

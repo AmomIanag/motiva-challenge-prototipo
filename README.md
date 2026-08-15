@@ -49,6 +49,8 @@ No pgAdmin, selecione o banco `motiva_esp` e abra o Query Tool. Em uma instalaç
 
 Em um banco criado antes da ETAPA 8, execute também `backend/sql/adicionar-imagem-leituras.sql`. A migração adiciona a coluna opcional `nome_imagem` sem alterar os registros existentes.
 
+Em um banco criado antes da ETAPA 8.1, execute `backend/sql/adicionar-imagem-diagnostico-leituras.sql`. A migração adiciona a coluna opcional `nome_imagem_diagnostico`, preservando as leituras anteriores.
+
 O seed é idempotente para os registros fornecidos e não é executado automaticamente pelo backend.
 
 Depois, inicie a API:
@@ -76,7 +78,7 @@ curl.exe -X POST `
   http://localhost:3333/api/leituras/imagem
 ```
 
-Em caso de sucesso, a API retorna a leitura com `alturaCm`, `status`, `medidoEm` e uma `imagemUrl` relativa. O backend executa `vision/.venv/Scripts/python.exe`, solicita a saída JSON do OpenCV, classifica a altura no TypeScript e só então grava a leitura no PostgreSQL. Se o processamento ou a persistência falhar, a imagem recém-salva é removida.
+Em caso de sucesso, a API retorna a leitura com `alturaCm`, `status`, `medidoEm`, `imagemUrl` e `imagemDiagnosticoUrl`. O backend executa `vision/.venv/Scripts/python.exe`, solicita a saída JSON e informa um caminho exclusivo para o diagnóstico do OpenCV. A altura é classificada no TypeScript e os dois nomes de arquivo são gravados na mesma leitura. Se o processamento ou a persistência falhar, os arquivos recém-criados são removidos.
 
 Teste uma requisição sem arquivo:
 
@@ -89,12 +91,19 @@ As imagens válidas são armazenadas localmente em `backend/uploads/`. O conteú
 Para conferir os dados diretamente pelo pgAdmin, execute:
 
 ```sql
-SELECT id, dispositivo_id, altura_cm, status, medido_em, nome_imagem
+SELECT
+  id,
+  dispositivo_id,
+  altura_cm,
+  status,
+  medido_em,
+  nome_imagem,
+  nome_imagem_diagnostico
 FROM leituras
 ORDER BY medido_em DESC, id DESC;
 ```
 
-Depois de um upload concluído, atualize `http://localhost:3000` para ver a nova leitura e sua fotografia no dashboard.
+Depois de um upload concluído, atualize `http://localhost:3000`. Na seção de registro visual, use o seletor `Original | Análise da visão` para alternar entre as duas imagens sem recarregar a página.
 
 ## Limitações atuais da visão computacional
 

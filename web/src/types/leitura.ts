@@ -6,4 +6,5 @@ export interface LeituraVegetacao {
   status: StatusVegetacao;
   medidoEm: string;
   imagemUrl: string | null;
+  imagemDiagnosticoUrl: string | null;
 }
