@@ -24,6 +24,17 @@ vision\.venv\Scripts\python.exe vision\src\medir_vegetacao.py `
 
 A imagem anotada é gravada por padrão em `vision/saida/diagnostico.jpg`.
 
+Para integração com o backend, o mesmo script oferece uma saída estritamente estruturada e pode evitar a geração do diagnóstico:
+
+```powershell
+vision\.venv\Scripts\python.exe vision\src\medir_vegetacao.py `
+  --imagem "C:\Users\Amom\foto-teste.jpg" `
+  --formato-json `
+  --sem-diagnostico
+```
+
+Esse modo retorna somente `alturaCm` e `escalaPixelsPorCm`. A classificação de risco permanece no backend TypeScript.
+
 ## Como funciona
 
 1. Dois pontos conhecidos da régua, centralizados em `src/configuracao.py`, definem a escala de 60 cm em pixels.
@@ -37,5 +48,4 @@ A imagem anotada é gravada por padrão em `vision/saida/diagnostico.jpg`.
 - A calibração e a linha da base são assistidas e específicas para o enquadramento atual.
 - A máscara HSV prioriza folhas verdes e pode perder caule, galhos escuros ou folhas sob sombra intensa.
 - Perspectiva, inclinação da régua, lente e distância diferente entre régua e planta afetam a precisão.
-- Não há integração com Express, PostgreSQL, upload ou ESP32 nesta etapa.
-
+- A calibração ainda não é apropriada para enquadramentos arbitrários ou uso direto pela ESP32-CAM.

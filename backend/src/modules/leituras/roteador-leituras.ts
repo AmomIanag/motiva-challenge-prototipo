@@ -2,15 +2,56 @@ import { Router } from "express";
 
 import {
   ErroValidacaoImagem,
+  removerImagem,
   salvarImagem,
+  type ArquivoImagemSalvo,
 } from "../imagens/armazenamento-imagem";
+import {
+  ErroProcessamentoVisao,
+  processarImagem,
+} from "../imagens/processar-imagem";
 import { receberImagem } from "../imagens/receber-imagem";
-import { buscarLeituras, buscarUltimaLeitura } from "./repositorio-leituras";
+import { DISPOSITIVO_PADRAO_PROTOTIPO } from "../../config/processamento-visao";
+import { criarLeituraVegetacao } from "./leitura";
+import {
+  buscarLeituras,
+  buscarUltimaLeitura,
+  inserirLeitura,
+} from "./repositorio-leituras";
 
 export const roteadorLeituras = Router();
 
+class ErroValidacaoDispositivo extends Error {}
+
+function obterDispositivoId(valor: unknown): string {
+  if (valor === undefined || valor === null || valor === "") {
+    return DISPOSITIVO_PADRAO_PROTOTIPO;
+  }
+
+  if (typeof valor !== "string") {
+    throw new ErroValidacaoDispositivo(
+      "O dispositivoId deve ser informado como texto.",
+    );
+  }
+
+  const dispositivoId = valor.trim();
+
+  if (!dispositivoId) {
+    return DISPOSITIVO_PADRAO_PROTOTIPO;
+  }
+
+  if (dispositivoId.length > 100) {
+    throw new ErroValidacaoDispositivo(
+      "O dispositivoId deve ter no máximo 100 caracteres.",
+    );
+  }
+
+  return dispositivoId;
+}
+
 roteadorLeituras.post("/imagem", receberImagem, async (requisicao, resposta) => {
   const imagem = requisicao.file;
+  let arquivoSalvo: ArquivoImagemSalvo | null = null;
 
   if (!imagem) {
     resposta.status(400).json({ erro: "Nenhuma imagem foi enviada." });
@@ -18,19 +59,57 @@ roteadorLeituras.post("/imagem", receberImagem, async (requisicao, resposta) => 
   }
 
   try {
-    const arquivo = await salvarImagem(imagem);
+    const dispositivoId = obterDispositivoId(requisicao.body.dispositivoId);
+    arquivoSalvo = await salvarImagem(imagem);
+    const medicao = await processarImagem(arquivoSalvo.caminhoAbsoluto);
+    const leituraClassificada = criarLeituraVegetacao({
+      dispositivoId,
+      alturaCm: medicao.alturaCm,
+      medidoEm: new Date().toISOString(),
+    });
+    const leitura = await inserirLeitura(
+      leituraClassificada,
+      arquivoSalvo.nome,
+    );
+
     resposta.status(201).json({
-      mensagem: "Imagem recebida com sucesso.",
-      arquivo,
+      mensagem: "Imagem processada com sucesso.",
+      leitura,
     });
   } catch (erro) {
+    if (arquivoSalvo) {
+      try {
+        await removerImagem(arquivoSalvo.caminhoAbsoluto);
+      } catch (erroRemocao) {
+        console.error("Erro ao remover a imagem após a falha:", erroRemocao);
+      }
+    }
+
+    if (erro instanceof ErroValidacaoDispositivo) {
+      resposta.status(400).json({ erro: erro.message });
+      return;
+    }
+
     if (erro instanceof ErroValidacaoImagem) {
       resposta.status(415).json({ erro: erro.message });
       return;
     }
 
-    console.error("Erro ao salvar a imagem:", erro);
-    resposta.status(500).json({ erro: "Não foi possível salvar a imagem." });
+    if (erro instanceof ErroProcessamentoVisao) {
+      console.error("Erro no processamento da visão computacional:", {
+        tipo: erro.tipo,
+        detalhes: erro.detalhes,
+      });
+
+      const status = erro.tipo === "processamento_falhou" ? 422 : 500;
+      resposta.status(status).json({ erro: erro.message });
+      return;
+    }
+
+    console.error("Erro ao processar e persistir a leitura:", erro);
+    resposta.status(500).json({
+      erro: "Não foi possível concluir o processamento da imagem.",
+    });
   }
 });
 

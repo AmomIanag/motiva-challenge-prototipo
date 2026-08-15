@@ -1,4 +1,5 @@
 import argparse
+import json
 import math
 import sys
 from dataclasses import dataclass
@@ -342,6 +343,16 @@ def criar_argumentos() -> argparse.Namespace:
         type=float,
         help="Altura manual opcional, usada somente para calcular o erro.",
     )
+    analisador.add_argument(
+        "--formato-json",
+        action="store_true",
+        help="Retorna somente o resultado estruturado em JSON.",
+    )
+    analisador.add_argument(
+        "--sem-diagnostico",
+        action="store_true",
+        help="Não gera a imagem de diagnóstico.",
+    )
     return analisador.parse_args()
 
 
@@ -351,7 +362,20 @@ def executar() -> int:
     try:
         imagem = carregar_imagem(argumentos.imagem)
         resultado = medir_vegetacao(imagem, CONFIGURACAO)
-        gerar_diagnostico(imagem, resultado, argumentos.saida, CONFIGURACAO)
+        if not argumentos.sem_diagnostico:
+            gerar_diagnostico(imagem, resultado, argumentos.saida, CONFIGURACAO)
+
+        if argumentos.formato_json:
+            print(
+                json.dumps(
+                    {
+                        "alturaCm": round(resultado.altura_cm, 2),
+                        "escalaPixelsPorCm": round(resultado.pixels_por_cm, 2),
+                    },
+                    ensure_ascii=False,
+                )
+            )
+            return 0
 
         print(f"Imagem analisada: {argumentos.imagem.name}")
         print(f"Escala estimada: {resultado.pixels_por_cm:.2f} pixels/cm")
@@ -367,7 +391,8 @@ def executar() -> int:
             print(f"Erro absoluto: {erro_absoluto:.2f} cm")
             print(f"Erro percentual: {erro_percentual:.2f}%")
 
-        print(f"Diagnóstico salvo em: {argumentos.saida}")
+        if not argumentos.sem_diagnostico:
+            print(f"Diagnóstico salvo em: {argumentos.saida}")
         return 0
     except ErroMedicao as erro:
         print(f"Erro: {erro}", file=sys.stderr)

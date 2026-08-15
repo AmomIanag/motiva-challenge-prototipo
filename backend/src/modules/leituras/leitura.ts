@@ -7,9 +7,15 @@ export interface LeituraVegetacao {
   alturaCm: number;
   status: StatusVegetacao;
   medidoEm: string;
+  imagemUrl: string | null;
 }
 
-export type EntradaLeituraVegetacao = Omit<LeituraVegetacao, "status">;
+export type LeituraVegetacaoSemImagem = Omit<LeituraVegetacao, "imagemUrl">;
+
+export type EntradaLeituraVegetacao = Omit<
+  LeituraVegetacaoSemImagem,
+  "status"
+>;
 
 export function classificarAlturaVegetacao(
   alturaCm: number,
@@ -27,10 +33,9 @@ export function classificarAlturaVegetacao(
 
 export function criarLeituraVegetacao(
   entrada: EntradaLeituraVegetacao,
-): LeituraVegetacao {
+): LeituraVegetacaoSemImagem {
   return {
     ...entrada,
     status: classificarAlturaVegetacao(entrada.alturaCm),
   };
 }
-

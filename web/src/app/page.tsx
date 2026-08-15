@@ -3,7 +3,7 @@ import { CardMetrica } from "@/components/card-metrica";
 import { ControleTema } from "@/components/controle-tema";
 import { HistoricoLeituras } from "@/components/historico-leituras";
 import { IndicadorStatus } from "@/components/indicador-status";
-import { carregarDadosDashboard } from "@/lib/api";
+import { carregarDadosDashboard, obterUrlImagem } from "@/lib/api";
 import {
   formatarAltura,
   formatarData,
@@ -136,11 +136,21 @@ function ConteudoDashboard({
               <h2>Captura da leitura</h2>
             </div>
           </div>
-          <div className="captura-placeholder">
-            <span className="captura-icone" aria-hidden="true">▣</span>
-            <strong>Imagem ainda não disponível</strong>
-            <p>O registro fotográfico será integrado em uma etapa futura.</p>
-          </div>
+          {ultimaLeitura.imagemUrl ? (
+            <div className="captura-imagem-container">
+              <img
+                className="captura-imagem"
+                src={obterUrlImagem(ultimaLeitura.imagemUrl)}
+                alt={`Vegetação registrada pelo dispositivo ${ultimaLeitura.dispositivoId}`}
+              />
+            </div>
+          ) : (
+            <div className="captura-placeholder">
+              <span className="captura-icone" aria-hidden="true">▣</span>
+              <strong>Imagem ainda não disponível</strong>
+              <p>Esta leitura não possui um registro fotográfico associado.</p>
+            </div>
+          )}
         </article>
       </section>
 

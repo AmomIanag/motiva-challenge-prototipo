@@ -662,6 +662,25 @@ select {
   line-height: 1.5;
 }
 
+.captura-imagem-container {
+  display: grid;
+  flex: 1;
+  min-height: 176px;
+  margin-top: 18px;
+  overflow: hidden;
+  place-items: center;
+  border: 1px solid var(--cor-neutro-200);
+  border-radius: var(--raio-medio);
+  background: var(--cor-neutro-050);
+}
+
+.captura-imagem {
+  display: block;
+  width: 100%;
+  height: 260px;
+  object-fit: contain;
+}
+
 .painel-historico {
   padding-bottom: 10px;
 }
@@ -842,6 +861,10 @@ tbody tr:hover {
   }
 
   .captura-placeholder {
+    min-height: 190px;
+  }
+
+  .captura-imagem-container {
     min-height: 190px;
   }
 }

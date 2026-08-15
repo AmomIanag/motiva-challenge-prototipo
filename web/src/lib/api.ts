@@ -5,6 +5,14 @@ const URL_API = (process.env.URL_API ?? "http://localhost:3333").replace(
   "",
 );
 
+export function obterUrlImagem(caminhoImagem: string): string {
+  const caminhoNormalizado = caminhoImagem.startsWith("/")
+    ? caminhoImagem
+    : `/${caminhoImagem}`;
+
+  return `${URL_API}${caminhoNormalizado}`;
+}
+
 async function buscarNaApi<T>(caminho: string): Promise<T> {
   const resposta = await fetch(`${URL_API}${caminho}`, {
     cache: "no-store",
@@ -45,4 +53,3 @@ export async function carregarDadosDashboard() {
 
   return { leituras, ultimaLeitura };
 }
-

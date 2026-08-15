@@ -5,5 +5,5 @@ export interface LeituraVegetacao {
   alturaCm: number;
   status: StatusVegetacao;
   medidoEm: string;
+  imagemUrl: string | null;
 }
-

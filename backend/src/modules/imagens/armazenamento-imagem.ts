@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, unlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import {
@@ -17,6 +17,7 @@ interface FormatoImagem {
 
 export interface ArquivoImagemSalvo {
   nome: string;
+  caminhoAbsoluto: string;
   tipoMime: TipoMimePermitido;
   tamanhoBytes: number;
 }
@@ -83,8 +84,12 @@ export async function salvarImagem(
 
   return {
     nome: nomeArquivo,
+    caminhoAbsoluto: caminhoImagem,
     tipoMime: formato.tipoMime,
     tamanhoBytes: arquivo.size,
   };
 }
 
+export async function removerImagem(caminhoAbsoluto: string): Promise<void> {
+  await unlink(caminhoAbsoluto);
+}

@@ -1,0 +1,2 @@
+ALTER TABLE leituras
+  ADD COLUMN IF NOT EXISTS nome_imagem VARCHAR(255);
