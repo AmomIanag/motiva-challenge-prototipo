@@ -1,5 +1,6 @@
 import { BarraLateral } from "@/components/barra-lateral";
 import { CardMetrica } from "@/components/card-metrica";
+import { ControleTema } from "@/components/controle-tema";
 import { HistoricoLeituras } from "@/components/historico-leituras";
 import { IndicadorStatus } from "@/components/indicador-status";
 import { carregarDadosDashboard } from "@/lib/api";
@@ -20,9 +21,12 @@ function CabecalhoDashboard() {
         <h1>Visão geral</h1>
         <p>Acompanhamento da vegetação na faixa de domínio rodoviário.</p>
       </div>
-      <div className="selo-ambiente">
-        <span aria-hidden="true" />
-        Monitoramento ativo
+      <div className="acoes-cabecalho">
+        <div className="selo-ambiente">
+          <span aria-hidden="true" />
+          Monitoramento ativo
+        </div>
+        <ControleTema />
       </div>
     </header>
   );

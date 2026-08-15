@@ -1,3 +1,5 @@
+import { MarcaMotiva } from "@/components/marca-motiva";
+
 const itensNavegacao = [
   { rotulo: "Visão Geral", simbolo: "▦", ativo: true },
   { rotulo: "Monitoramento", simbolo: "◎" },
@@ -11,8 +13,8 @@ const itensNavegacao = [
 export function BarraLateral() {
   return (
     <aside className="barra-lateral">
-      <div className="marca" aria-label="Espaço reservado para a marca Motiva">
-        <span className="marca-nome">Motiva</span>
+      <div className="marca">
+        <MarcaMotiva />
         <span className="marca-produto">Monitoramento viário</span>
       </div>
 
@@ -46,4 +48,3 @@ export function BarraLateral() {
     </aside>
   );
 }
-

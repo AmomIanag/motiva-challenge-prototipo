@@ -1,13 +1,13 @@
 :root {
   color-scheme: light;
 
-  --cor-roxo-900: #351356;
-  --cor-roxo-800: #48206b;
-  --cor-roxo-700: #5e2a84;
-  --cor-roxo-600: #7435a2;
-  --cor-roxo-500: #8b4dbc;
-  --cor-roxo-100: #f0e8f7;
-  --cor-roxo-050: #f8f4fb;
+  --cor-roxo-900: #211b55;
+  --cor-roxo-800: #302778;
+  --cor-roxo-700: #40349b;
+  --cor-roxo-600: #5145c6;
+  --cor-roxo-500: #6c63dd;
+  --cor-roxo-100: #e9e8fb;
+  --cor-roxo-050: #f5f4ff;
 
   --cor-neutro-950: #19171d;
   --cor-neutro-800: #343039;
@@ -19,6 +19,9 @@
   --cor-neutro-100: #f1eff3;
   --cor-neutro-050: #f7f6f8;
   --cor-branco: #ffffff;
+  --cor-fundo-principal: #f7f7fa;
+  --cor-superficie: #ffffff;
+  --cor-superficie-sidebar: #ffffff;
 
   --cor-seguro: #18845a;
   --cor-seguro-fundo: #e7f6ef;
@@ -33,7 +36,42 @@
   --raio-medio: 12px;
   --raio-pequeno: 8px;
   --largura-sidebar: 248px;
-  --fonte-principal: Inter, "Segoe UI", Helvetica, Arial, sans-serif;
+  --fonte-principal: Manrope, Inter, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+[data-theme="escuro"] {
+  color-scheme: dark;
+
+  --cor-roxo-900: #ece9ff;
+  --cor-roxo-800: #d7d1ff;
+  --cor-roxo-700: #b8adff;
+  --cor-roxo-600: #9b8cf4;
+  --cor-roxo-500: #8174df;
+  --cor-roxo-100: #30294f;
+  --cor-roxo-050: #242039;
+
+  --cor-neutro-950: #f5f7fb;
+  --cor-neutro-800: #e3e7ef;
+  --cor-neutro-700: #c5cbd7;
+  --cor-neutro-600: #aab1c0;
+  --cor-neutro-500: #858e9f;
+  --cor-neutro-300: #3a4254;
+  --cor-neutro-200: #2a3040;
+  --cor-neutro-100: #202532;
+  --cor-neutro-050: #141720;
+  --cor-fundo-principal: #0f1117;
+  --cor-superficie: #1a1e29;
+  --cor-superficie-sidebar: #151821;
+
+  --cor-seguro: #62c99a;
+  --cor-seguro-fundo: #17372d;
+  --cor-cuidado: #f1b85b;
+  --cor-cuidado-fundo: #3b2d19;
+  --cor-perigo: #f07981;
+  --cor-perigo-fundo: #3d2027;
+
+  --sombra-card: 0 1px 2px rgb(0 0 0 / 16%), 0 14px 36px rgb(0 0 0 / 16%);
+  --sombra-sidebar: 1px 0 0 var(--cor-neutro-200);
 }
 
 * {
@@ -41,16 +79,30 @@
 }
 
 html {
-  background: var(--cor-neutro-050);
+  background: var(--cor-fundo-principal);
 }
 
 body {
   min-height: 100vh;
   margin: 0;
-  background: var(--cor-neutro-050);
+  background: var(--cor-fundo-principal);
   color: var(--cor-neutro-950);
   font-family: var(--fonte-principal);
   -webkit-font-smoothing: antialiased;
+}
+
+body,
+.barra-lateral,
+.card-metrica,
+.painel,
+.estado-dashboard,
+.selo-ambiente,
+.controle-tema {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 button,
@@ -75,7 +127,7 @@ select {
   height: 100vh;
   padding: 28px 18px 20px;
   overflow: hidden;
-  background: var(--cor-branco);
+  background: var(--cor-superficie-sidebar);
   box-shadow: var(--sombra-sidebar);
 }
 
@@ -88,11 +140,26 @@ select {
   border-bottom: 1px solid var(--cor-neutro-200);
 }
 
-.marca-nome {
+.marca-identidade {
+  position: relative;
+  display: flex;
+  width: 132px;
+  height: 38px;
+  align-items: center;
+}
+
+.marca-placeholder {
   color: var(--cor-roxo-700);
   font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: -0.04em;
+}
+
+.marca-logo {
+  width: 132px;
+  height: 38px;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .marca-produto {
@@ -253,6 +320,13 @@ select {
   line-height: 1.55;
 }
 
+.acoes-cabecalho {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 10px;
+}
+
 .selo-ambiente {
   display: inline-flex;
   flex: 0 0 auto;
@@ -262,7 +336,7 @@ select {
   padding: 0 14px;
   border: 1px solid var(--cor-neutro-200);
   border-radius: 999px;
-  background: var(--cor-branco);
+  background: var(--cor-superficie);
   color: var(--cor-neutro-700);
   font-size: 0.76rem;
   font-weight: 650;
@@ -277,6 +351,72 @@ select {
   box-shadow: 0 0 0 4px var(--cor-seguro-fundo);
 }
 
+.controle-tema {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 11px 0 7px;
+  border: 1px solid var(--cor-neutro-200);
+  border-radius: 999px;
+  background: var(--cor-superficie);
+  color: var(--cor-neutro-700);
+  cursor: pointer;
+}
+
+.controle-tema:hover {
+  border-color: var(--cor-roxo-500);
+}
+
+.controle-tema:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--cor-roxo-500) 30%, transparent);
+  outline-offset: 2px;
+}
+
+.controle-tema-trilho {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 48px;
+  height: 26px;
+  align-items: center;
+  border: 1px solid var(--cor-neutro-200);
+  border-radius: 999px;
+  background: var(--cor-neutro-100);
+  color: var(--cor-neutro-500);
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+.controle-tema-sol,
+.controle-tema-lua {
+  position: relative;
+  z-index: 1;
+  line-height: 1;
+}
+
+.controle-tema-seletor {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--cor-superficie);
+  box-shadow: 0 1px 4px rgb(20 16 30 / 20%);
+  transition: transform 180ms ease;
+}
+
+[data-theme="escuro"] .controle-tema-seletor {
+  transform: translateX(22px);
+}
+
+.controle-tema-texto {
+  min-width: 42px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
 .grade-metricas {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -289,7 +429,7 @@ select {
 .estado-dashboard {
   border: 1px solid var(--cor-neutro-200);
   border-radius: var(--raio-grande);
-  background: var(--cor-branco);
+  background: var(--cor-superficie);
   box-shadow: var(--sombra-card);
 }
 
