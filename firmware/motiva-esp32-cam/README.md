@@ -23,4 +23,16 @@ O endpoint configurado atualmente é `http://192.168.15.44:3333/api/leituras/ima
 7. Reinicie a placa no modo normal de execução após o Upload.
 8. Abra o Serial Monitor em `115200` baud.
 
-O firmware captura e envia uma imagem imediatamente e repete a tentativa a cada 30 segundos. A ESP acessa o backend pelo IPv4 do PC, nunca por `localhost`. Como o IPv4 pode mudar, verifique-o com `ipconfig` e ajuste `ENDERECO_BACKEND` quando necessário.
+## Realizar uma leitura manual
+
+1. Aguarde a mensagem `[Motiva] Sistema pronto.` no Serial Monitor.
+2. Digite `f` ou `F`.
+3. Pressione Enter.
+4. Aguarde a captura, o envio e a resposta HTTP do backend.
+5. Depois da nova mensagem de espera, digite `F` novamente quando desejar outra leitura.
+
+Nenhuma imagem é capturada automaticamente. O modo manual foi escolhido para o protótipo e a demonstração porque permite posicionar corretamente a câmera, a planta e a régua, evita armazenar imagens aleatórias e executa a medição somente quando desejado.
+
+Esse comportamento não é uma exigência da arquitetura definitiva. Uma implantação futura poderá iniciar capturas por intervalo programado ou por outro evento.
+
+A ESP acessa o backend pelo IPv4 do PC, nunca por `localhost`. Como o IPv4 pode mudar, verifique-o com `ipconfig` e ajuste `ENDERECO_BACKEND` quando necessário.

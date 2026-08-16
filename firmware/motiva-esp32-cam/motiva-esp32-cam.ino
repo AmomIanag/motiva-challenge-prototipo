@@ -29,13 +29,13 @@ constexpr char CAMINHO_UPLOAD[] = "/api/leituras/imagem";
 constexpr char DISPOSITIVO_ID[] = "ESP-01";
 constexpr char LIMITE_MULTIPART[] = "----MotivaESP32CAMBoundary";
 
-constexpr unsigned long INTERVALO_LEITURA_MS = 30000;
 constexpr unsigned long TEMPO_LIMITE_WIFI_MS = 20000;
 constexpr unsigned long TEMPO_LIMITE_ENVIO_MS = 15000;
 constexpr unsigned long TEMPO_LIMITE_RESPOSTA_MS = 45000;
 constexpr size_t TAMANHO_BLOCO_ENVIO = 1024;
 
 bool cameraInicializada = false;
+bool leituraEmAndamento = false;
 
 bool escreverBytes(
   WiFiClient &cliente,
@@ -293,6 +293,41 @@ void capturarEEnviar() {
   esp_camera_fb_return(frame);
 }
 
+void limparEntradaSerial() {
+  while (Serial.available() > 0) {
+    Serial.read();
+  }
+}
+
+void exibirMensagemEspera() {
+  Serial.println("[Motiva] Pronto para nova leitura. Digite F e pressione Enter.");
+}
+
+void realizarLeituraManual() {
+  if (leituraEmAndamento) {
+    return;
+  }
+
+  leituraEmAndamento = true;
+  Serial.println("[Motiva] Comando de captura recebido.");
+
+  if (!cameraInicializada) {
+    cameraInicializada = inicializarCamera();
+  }
+
+  if (WiFi.status() != WL_CONNECTED && !conectarWifi()) {
+    Serial.println("[Motiva] Leitura cancelada; Wi-Fi indisponível.");
+  } else if (!cameraInicializada) {
+    Serial.println("[Motiva] Leitura cancelada; câmera indisponível.");
+  } else {
+    capturarEEnviar();
+  }
+
+  leituraEmAndamento = false;
+  limparEntradaSerial();
+  exibirMensagemEspera();
+}
+
 void setup() {
   Serial.begin(115200);
   delay(1000);
@@ -301,23 +336,28 @@ void setup() {
 
   cameraInicializada = inicializarCamera();
   conectarWifi();
+
+  Serial.println("[Motiva] Sistema pronto.");
+  Serial.println("[Motiva] Digite F e pressione Enter para realizar uma leitura.");
 }
 
 void loop() {
-  if (!cameraInicializada) {
-    cameraInicializada = inicializarCamera();
+  if (Serial.available() <= 0) {
+    delay(10);
+    return;
   }
 
-  if (WiFi.status() != WL_CONNECTED) {
-    conectarWifi();
+  const char comando = static_cast<char>(Serial.read());
+
+  if (comando == '\r' || comando == '\n') {
+    return;
   }
 
-  if (cameraInicializada && WiFi.status() == WL_CONNECTED) {
-    capturarEEnviar();
-  } else {
-    Serial.println("[Motiva] Leitura adiada; câmera ou Wi-Fi indisponível.");
+  if (comando == 'f' || comando == 'F') {
+    realizarLeituraManual();
+    return;
   }
 
-  Serial.println("[Motiva] Próxima leitura em 30 segundos.");
-  delay(INTERVALO_LEITURA_MS);
+  limparEntradaSerial();
+  Serial.println("[Motiva] Comando desconhecido. Use F para realizar uma leitura.");
 }
