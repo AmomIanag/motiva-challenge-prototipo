@@ -20,6 +20,9 @@ npm-debug.log*
 backend/uploads/*
 !backend/uploads/.gitkeep
 
+# Credenciais locais do firmware
+firmware/motiva-esp32-cam/credenciais.h
+
 # Python (visao comp. futuramente)
 .venv/
 venv/
