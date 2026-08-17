@@ -17,11 +17,15 @@ import { receberImagem } from "../imagens/receber-imagem";
 import { devePreservarUploadsFalhos } from "../../config/diagnostico-visao";
 import { DISPOSITIVO_PADRAO_PROTOTIPO } from "../../config/processamento-visao";
 import { criarLeituraVegetacao } from "./leitura";
+import { limparImagensAssociadas } from "./limpar-imagens-leituras";
 import {
   buscarLeituras,
   buscarUltimaLeitura,
+  excluirLeituraPorId,
+  excluirTodasLeituras,
   inserirLeitura,
 } from "./repositorio-leituras";
+import { criarRoteadorExclusaoLeituras } from "./roteador-exclusao-leituras";
 
 export const roteadorLeituras = Router();
 
@@ -177,3 +181,11 @@ roteadorLeituras.get("/ultima", async (_requisicao, resposta) => {
       .json({ erro: "Não foi possível consultar a última leitura." });
   }
 });
+
+roteadorLeituras.use(
+  criarRoteadorExclusaoLeituras({
+    excluirLeituraPorId,
+    excluirTodasLeituras,
+    limparImagensAssociadas,
+  }),
+);

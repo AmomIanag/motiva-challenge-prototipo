@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "node --env-file-if-exists=.env --import tsx --watch src/servidor.ts",
     "build": "tsc",
+    "test": "node --import tsx --test src/modules/leituras/exclusao-leituras.test.ts",
     "start": "node --env-file-if-exists=.env dist/servidor.js",
     "typecheck": "tsc --noEmit"
   },

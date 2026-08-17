@@ -41,8 +41,8 @@ export function BarraLateral() {
       <div className="barra-lateral-rodape">
         <span className="indicador-conexao" aria-hidden="true" />
         <div>
-          <strong>Ambiente de demonstração</strong>
-          <span>Dados simulados</span>
+          <strong>Monitoramento integrado</strong>
+          <span>ESP32-CAM e visão computacional</span>
         </div>
       </div>
     </aside>

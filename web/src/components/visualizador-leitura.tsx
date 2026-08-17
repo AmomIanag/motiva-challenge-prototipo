@@ -5,7 +5,7 @@ import { useState } from "react";
 type Visualizacao = "original" | "analise";
 
 interface VisualizadorLeituraProps {
-  dispositivoId: string;
+  dispositivoId: string | null;
   imagemOriginalUrl: string | null;
   imagemAnaliseUrl: string | null;
 }
@@ -53,8 +53,8 @@ export function VisualizadorLeitura({
             src={imagemSelecionada}
             alt={
               exibindoAnalise
-                ? `Análise da vegetação registrada pelo dispositivo ${dispositivoId}`
-                : `Vegetação registrada pelo dispositivo ${dispositivoId}`
+                ? `Análise da vegetação registrada pelo dispositivo ${dispositivoId ?? "desconhecido"}`
+                : `Vegetação registrada pelo dispositivo ${dispositivoId ?? "desconhecido"}`
             }
           />
         </div>
@@ -64,12 +64,16 @@ export function VisualizadorLeitura({
           <strong>
             {exibindoAnalise
               ? "Análise não disponível"
-              : "Imagem ainda não disponível"}
+              : dispositivoId
+                ? "Imagem ainda não disponível"
+                : "Nenhuma leitura registrada"}
           </strong>
           <p>
             {exibindoAnalise
               ? "A análise da visão não está disponível para esta leitura."
-              : "Esta leitura não possui um registro fotográfico associado."}
+              : dispositivoId
+                ? "Esta leitura não possui um registro fotográfico associado."
+                : "Realize uma nova captura com o dispositivo para iniciar o monitoramento."}
           </p>
         </div>
       )}

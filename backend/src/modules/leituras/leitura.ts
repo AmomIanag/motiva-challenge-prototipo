@@ -3,6 +3,7 @@ import { LIMITES_ALTURA_VEGETACAO_CM } from "../../config/risco-vegetacao";
 export type StatusVegetacao = "seguro" | "cuidado" | "perigo";
 
 export interface LeituraVegetacao {
+  id: string;
   dispositivoId: string;
   alturaCm: number;
   status: StatusVegetacao;
@@ -13,7 +14,7 @@ export interface LeituraVegetacao {
 
 export type LeituraVegetacaoSemImagem = Omit<
   LeituraVegetacao,
-  "imagemUrl" | "imagemDiagnosticoUrl"
+  "id" | "imagemUrl" | "imagemDiagnosticoUrl"
 >;
 
 export type EntradaLeituraVegetacao = Omit<

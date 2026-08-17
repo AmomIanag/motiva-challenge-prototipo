@@ -6,6 +6,7 @@ import type {
 } from "./leitura";
 
 interface LinhaLeitura {
+  id: string;
   dispositivo_id: string;
   altura_cm: string;
   status: StatusVegetacao;
@@ -16,6 +17,7 @@ interface LinhaLeitura {
 
 function mapearLinhaParaLeitura(linha: LinhaLeitura): LeituraVegetacao {
   return {
+    id: linha.id,
     dispositivoId: linha.dispositivo_id,
     alturaCm: Number(linha.altura_cm),
     status: linha.status,
@@ -30,6 +32,7 @@ function mapearLinhaParaLeitura(linha: LinhaLeitura): LeituraVegetacao {
 }
 
 const COLUNAS_LEITURA = `
+  id,
   dispositivo_id,
   altura_cm,
   status,
@@ -37,6 +40,28 @@ const COLUNAS_LEITURA = `
   nome_imagem,
   nome_imagem_diagnostico
 `;
+
+export interface ArquivosAssociadosLeitura {
+  id: string;
+  nomeImagem: string | null;
+  nomeImagemDiagnostico: string | null;
+}
+
+interface LinhaArquivosAssociados {
+  id: string;
+  nome_imagem: string | null;
+  nome_imagem_diagnostico: string | null;
+}
+
+function mapearArquivosAssociados(
+  linha: LinhaArquivosAssociados,
+): ArquivosAssociadosLeitura {
+  return {
+    id: linha.id,
+    nomeImagem: linha.nome_imagem,
+    nomeImagemDiagnostico: linha.nome_imagem_diagnostico,
+  };
+}
 
 export async function buscarLeituras(): Promise<LeituraVegetacao[]> {
   const resultado = await poolBancoDados.query<LinhaLeitura>(`
@@ -95,4 +120,62 @@ export async function inserirLeitura(
   }
 
   return mapearLinhaParaLeitura(linhaCriada);
+}
+
+export async function excluirLeituraPorId(
+  id: string,
+): Promise<ArquivosAssociadosLeitura | null> {
+  const cliente = await poolBancoDados.connect();
+
+  try {
+    await cliente.query("BEGIN");
+    const resultado = await cliente.query<LinhaArquivosAssociados>(
+      `
+        SELECT id, nome_imagem, nome_imagem_diagnostico
+        FROM leituras
+        WHERE id = $1
+        FOR UPDATE
+      `,
+      [id],
+    );
+    const linha = resultado.rows[0];
+
+    if (!linha) {
+      await cliente.query("ROLLBACK");
+      return null;
+    }
+
+    await cliente.query("DELETE FROM leituras WHERE id = $1", [id]);
+    await cliente.query("COMMIT");
+    return mapearArquivosAssociados(linha);
+  } catch (erro) {
+    await cliente.query("ROLLBACK");
+    throw erro;
+  } finally {
+    cliente.release();
+  }
+}
+
+export async function excluirTodasLeituras(): Promise<
+  ArquivosAssociadosLeitura[]
+> {
+  const cliente = await poolBancoDados.connect();
+
+  try {
+    await cliente.query("BEGIN");
+    const resultado = await cliente.query<LinhaArquivosAssociados>(`
+      SELECT id, nome_imagem, nome_imagem_diagnostico
+      FROM leituras
+      FOR UPDATE
+    `);
+
+    await cliente.query("DELETE FROM leituras");
+    await cliente.query("COMMIT");
+    return resultado.rows.map(mapearArquivosAssociados);
+  } catch (erro) {
+    await cliente.query("ROLLBACK");
+    throw erro;
+  } finally {
+    cliente.release();
+  }
 }

@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
-import { join, parse } from "node:path";
+import { basename, isAbsolute, join, parse, relative, resolve } from "node:path";
 
 import {
   CONFIGURACAO_UPLOAD_IMAGEM,
@@ -109,4 +109,33 @@ export function criarDestinoImagemDiagnostico(
 
 export async function removerImagem(caminhoAbsoluto: string): Promise<void> {
   await rm(caminhoAbsoluto, { force: true });
+}
+
+export function resolverCaminhoSeguroUpload(
+  nomeArquivo: string,
+  diretorioUploads = DIRETORIO_UPLOADS,
+): string | null {
+  if (
+    !nomeArquivo ||
+    basename(nomeArquivo) !== nomeArquivo ||
+    nomeArquivo === "." ||
+    nomeArquivo === ".."
+  ) {
+    return null;
+  }
+
+  const diretorioResolvido = resolve(diretorioUploads);
+  const caminhoResolvido = resolve(diretorioResolvido, nomeArquivo);
+  const caminhoRelativo = relative(diretorioResolvido, caminhoResolvido);
+
+  if (
+    !caminhoRelativo ||
+    caminhoRelativo.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`) ||
+    caminhoRelativo === ".." ||
+    isAbsolute(caminhoRelativo)
+  ) {
+    return null;
+  }
+
+  return caminhoResolvido;
 }

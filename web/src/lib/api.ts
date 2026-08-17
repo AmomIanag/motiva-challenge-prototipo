@@ -25,6 +25,24 @@ async function buscarNaApi<T>(caminho: string): Promise<T> {
   return resposta.json() as Promise<T>;
 }
 
+async function excluirNaApi<T>(caminho: string): Promise<T> {
+  const resposta = await fetch(`${URL_API}${caminho}`, {
+    method: "DELETE",
+    cache: "no-store",
+  });
+
+  if (!resposta.ok) {
+    const corpo = (await resposta.json().catch(() => null)) as {
+      erro?: string;
+    } | null;
+    throw new Error(
+      corpo?.erro ?? `A API respondeu com o código HTTP ${resposta.status}.`,
+    );
+  }
+
+  return resposta.json() as Promise<T>;
+}
+
 export async function carregarLeituras(): Promise<LeituraVegetacao[]> {
   return buscarNaApi<LeituraVegetacao[]>("/api/leituras");
 }
@@ -52,4 +70,18 @@ export async function carregarDadosDashboard() {
   ]);
 
   return { leituras, ultimaLeitura };
+}
+
+export async function excluirLeitura(id: string): Promise<void> {
+  await excluirNaApi<{ leituraId: string }>(
+    `/api/leituras/${encodeURIComponent(id)}`,
+  );
+}
+
+export async function limparHistorico(): Promise<number> {
+  const resultado = await excluirNaApi<{
+    quantidadeLeiturasRemovidas: number;
+  }>("/api/leituras");
+
+  return resultado.quantidadeLeiturasRemovidas;
 }
