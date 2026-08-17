@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { Router } from "express";
 
 import {
@@ -13,6 +14,7 @@ import {
   processarImagem,
 } from "../imagens/processar-imagem";
 import { receberImagem } from "../imagens/receber-imagem";
+import { devePreservarUploadsFalhos } from "../../config/diagnostico-visao";
 import { DISPOSITIVO_PADRAO_PROTOTIPO } from "../../config/processamento-visao";
 import { criarLeituraVegetacao } from "./leitura";
 import {
@@ -87,7 +89,10 @@ roteadorLeituras.post("/imagem", receberImagem, async (requisicao, resposta) => 
       leitura,
     });
   } catch (erro) {
-    if (!persistenciaConcluida) {
+    const preservarParaDiagnostico =
+      erro instanceof ErroProcessamentoVisao && devePreservarUploadsFalhos();
+
+    if (!persistenciaConcluida && !preservarParaDiagnostico) {
       const caminhosParaRemover = [
         arquivoSalvo?.caminhoAbsoluto,
         destinoDiagnostico?.caminhoAbsoluto,
@@ -99,6 +104,19 @@ roteadorLeituras.post("/imagem", receberImagem, async (requisicao, resposta) => 
         } catch (erroRemocao) {
           console.error("Erro ao remover uma imagem após a falha:", erroRemocao);
         }
+      }
+    }
+
+    if (preservarParaDiagnostico && arquivoSalvo) {
+      console.warn("Visão computacional rejeitou a leitura.");
+      console.warn("Imagem preservada para diagnóstico:");
+      console.warn(arquivoSalvo.caminhoAbsoluto);
+      if (
+        destinoDiagnostico &&
+        existsSync(destinoDiagnostico.caminhoAbsoluto)
+      ) {
+        console.warn("Diagnóstico parcial preservado:");
+        console.warn(destinoDiagnostico.caminhoAbsoluto);
       }
     }
 
