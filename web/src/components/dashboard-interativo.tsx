@@ -6,6 +6,7 @@ import {
   excluirLeituraAcao,
   limparHistoricoAcao,
 } from "@/app/acoes-leituras";
+import { AnaliseLeituras } from "@/components/analise-leituras";
 import { CardMetrica } from "@/components/card-metrica";
 import { HistoricoLeituras } from "@/components/historico-leituras";
 import { IndicadorStatus } from "@/components/indicador-status";
@@ -15,6 +16,12 @@ import {
   formatarData,
   obterMensagemStatus,
 } from "@/lib/formatadores";
+import {
+  FILTROS_PADRAO,
+  filtrarLeituras,
+  filtrosEstaoAtivos,
+  type FiltrosLeituras,
+} from "@/lib/filtros-leituras";
 import type { LeituraVegetacao } from "@/types/leitura";
 
 interface PropriedadesDashboardInterativo {
@@ -25,7 +32,20 @@ export function DashboardInterativo({
   leiturasIniciais,
 }: PropriedadesDashboardInterativo) {
   const [leituras, setLeituras] = useState(leiturasIniciais);
+  const [filtros, setFiltros] = useState<FiltrosLeituras>(FILTROS_PADRAO);
   const ultimaLeitura = useMemo(() => leituras.at(-1) ?? null, [leituras]);
+  const leiturasFiltradas = useMemo(
+    () => filtrarLeituras(leituras, filtros),
+    [leituras, filtros],
+  );
+  const dispositivos = useMemo(
+    () =>
+      [...new Set(leituras.map((leitura) => leitura.dispositivoId))].sort(
+        (a, b) => a.localeCompare(b, "pt-BR"),
+      ),
+    [leituras],
+  );
+  const existemFiltrosAtivos = filtrosEstaoAtivos(filtros);
 
   async function excluirLeitura(id: string): Promise<void> {
     await excluirLeituraAcao(id);
@@ -35,6 +55,11 @@ export function DashboardInterativo({
   async function limparHistorico(): Promise<void> {
     await limparHistoricoAcao();
     setLeituras([]);
+    setFiltros(FILTROS_PADRAO);
+  }
+
+  function limparFiltros() {
+    setFiltros(FILTROS_PADRAO);
   }
 
   return (
@@ -133,8 +158,21 @@ export function DashboardInterativo({
         </article>
       </section>
 
+      <AnaliseLeituras
+        leituras={leiturasFiltradas}
+        totalLeituras={leituras.length}
+        dispositivos={dispositivos}
+        filtros={filtros}
+        filtrosAtivos={existemFiltrosAtivos}
+        aoAlterarFiltros={setFiltros}
+        aoLimparFiltros={limparFiltros}
+      />
+
       <HistoricoLeituras
-        leituras={leituras}
+        leituras={leiturasFiltradas}
+        totalLeituras={leituras.length}
+        filtrosAtivos={existemFiltrosAtivos}
+        aoLimparFiltros={limparFiltros}
         aoExcluirLeitura={excluirLeitura}
         aoLimparHistorico={limparHistorico}
       />

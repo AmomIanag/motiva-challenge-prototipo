@@ -8,6 +8,9 @@ import type { LeituraVegetacao } from "@/types/leitura";
 
 interface PropriedadesHistoricoLeituras {
   leituras: LeituraVegetacao[];
+  totalLeituras: number;
+  filtrosAtivos: boolean;
+  aoLimparFiltros: () => void;
   aoExcluirLeitura: (id: string) => Promise<void>;
   aoLimparHistorico: () => Promise<void>;
 }
@@ -27,6 +30,9 @@ function IconeLixeira() {
 
 export function HistoricoLeituras({
   leituras,
+  totalLeituras,
+  filtrosAtivos,
+  aoLimparFiltros,
   aoExcluirLeitura,
   aoLimparHistorico,
 }: PropriedadesHistoricoLeituras) {
@@ -93,12 +99,14 @@ export function HistoricoLeituras({
         </div>
         <div className="acoes-historico">
           <span className="contador-registros">
-            {leituras.length} {leituras.length === 1 ? "registro" : "registros"}
+            {filtrosAtivos
+              ? `${leituras.length} de ${totalLeituras} leituras`
+              : `${totalLeituras} ${totalLeituras === 1 ? "registro" : "registros"}`}
           </span>
           <button
             type="button"
             className="botao-limpar-historico"
-            disabled={leituras.length === 0}
+            disabled={totalLeituras === 0}
             onClick={() => abrirConfirmacao({ tipo: "historico" })}
           >
             <IconeLixeira />
@@ -109,11 +117,25 @@ export function HistoricoLeituras({
 
       {leiturasRecentes.length === 0 ? (
         <div className="estado-vazio-historico">
-          <strong>Nenhuma leitura registrada.</strong>
+          <strong>
+            {totalLeituras > 0
+              ? "Nenhuma leitura encontrada para os filtros selecionados."
+              : "Nenhuma leitura registrada."}
+          </strong>
           <p>
-            Realize uma nova captura com o dispositivo para iniciar o
-            monitoramento.
+            {totalLeituras > 0
+              ? "Ajuste os critérios de consulta ou restaure todos os resultados."
+              : "Realize uma nova captura com o dispositivo para iniciar o monitoramento."}
           </p>
+          {totalLeituras > 0 && filtrosAtivos ? (
+            <button
+              type="button"
+              className="botao-limpar-filtros"
+              onClick={aoLimparFiltros}
+            >
+              Limpar filtros
+            </button>
+          ) : null}
         </div>
       ) : (
         <div className="tabela-container">
@@ -170,7 +192,7 @@ export function HistoricoLeituras({
             <p id="descricao-confirmacao-exclusao">
               {confirmacao.tipo === "leitura"
                 ? "A leitura e suas imagens original e de diagnóstico associadas serão removidas."
-                : `${leituras.length} ${leituras.length === 1 ? "leitura será removida" : "leituras serão removidas"}, incluindo suas imagens associadas. Esta ação não poderá ser desfeita.`}
+                : `${totalLeituras} ${totalLeituras === 1 ? "leitura será removida" : "leituras serão removidas"}, incluindo suas imagens associadas. Esta ação não poderá ser desfeita.`}
             </p>
             {erro ? <p className="mensagem-erro-exclusao" role="alert">{erro}</p> : null}
             <div className="acoes-modal">
