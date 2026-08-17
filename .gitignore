@@ -32,7 +32,8 @@ vision/saida/*
 !vision/saida/.gitkeep
 
 # Editor/ide e operating system
-.vscode/
+.vscode/*
+!.vscode/c_cpp_properties.json
 .idea/
 .DS_Store
 Thumbs.db
