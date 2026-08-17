@@ -11,12 +11,23 @@ const formatadorDataHora = new Intl.DateTimeFormat("pt-BR", {
   timeZone: "America/Sao_Paulo",
 });
 
+const formatadorHorario = new Intl.DateTimeFormat("pt-BR", {
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  timeZone: "America/Sao_Paulo",
+});
+
 export function formatarAltura(alturaCm: number): string {
   return `${formatadorAltura.format(alturaCm)} cm`;
 }
 
 export function formatarData(medidoEm: string): string {
   return formatadorDataHora.format(new Date(medidoEm));
+}
+
+export function formatarHorario(instante: string): string {
+  return formatadorHorario.format(new Date(instante));
 }
 
 export function obterRotuloStatus(status: StatusVegetacao): string {
@@ -38,4 +49,3 @@ export function obterMensagemStatus(status: StatusVegetacao): string {
 
   return mensagens[status];
 }
-

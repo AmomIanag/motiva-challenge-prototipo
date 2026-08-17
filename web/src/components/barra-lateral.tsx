@@ -1,7 +1,7 @@
 import { MarcaMotiva } from "@/components/marca-motiva";
 
 const itensNavegacao = [
-  { rotulo: "Visão Geral", simbolo: "▦", ativo: true },
+  { rotulo: "Visão geral", simbolo: "▦", ativo: true },
   { rotulo: "Monitoramento", simbolo: "◎" },
   { rotulo: "Mapa", simbolo: "⌖" },
   { rotulo: "Alertas", simbolo: "!" },
@@ -39,10 +39,10 @@ export function BarraLateral() {
       </nav>
 
       <div className="barra-lateral-rodape">
-        <span className="indicador-conexao" aria-hidden="true" />
+        <span className="indicador-integracao" aria-hidden="true">+</span>
         <div>
-          <strong>Monitoramento integrado</strong>
-          <span>ESP32-CAM e visão computacional</span>
+          <strong>Integração do protótipo</strong>
+          <span>ESP32-CAM + API + visão computacional</span>
         </div>
       </div>
     </aside>

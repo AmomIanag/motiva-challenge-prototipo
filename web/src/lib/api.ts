@@ -47,6 +47,18 @@ export async function carregarLeituras(): Promise<LeituraVegetacao[]> {
   return buscarNaApi<LeituraVegetacao[]>("/api/leituras");
 }
 
+export async function carregarLeiturasDashboard(): Promise<LeituraVegetacao[]> {
+  const leituras = await carregarLeituras();
+
+  return leituras.map((leitura) => ({
+    ...leitura,
+    imagemUrl: leitura.imagemUrl ? obterUrlImagem(leitura.imagemUrl) : null,
+    imagemDiagnosticoUrl: leitura.imagemDiagnosticoUrl
+      ? obterUrlImagem(leitura.imagemDiagnosticoUrl)
+      : null,
+  }));
+}
+
 export async function carregarUltimaLeitura(): Promise<LeituraVegetacao | null> {
   const resposta = await fetch(`${URL_API}/api/leituras/ultima`, {
     cache: "no-store",
