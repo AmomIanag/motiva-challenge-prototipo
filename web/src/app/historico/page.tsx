@@ -1,15 +1,31 @@
 import type { Metadata } from "next";
 
-import { PaginaPlaceholder } from "@/components/pagina-placeholder";
+import { HistoricoInterativo } from "@/components/historico-interativo";
+import { carregarLeiturasDashboard } from "@/lib/api";
+import type { LeituraVegetacao } from "@/types/leitura";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = { title: "Histórico" };
 
-export default function PaginaHistorico() {
+export default async function PaginaHistorico() {
+  let leiturasIniciais: LeituraVegetacao[] = [];
+  let sincronizadoEmInicial: string | null = null;
+  let erroInicial: string | null = null;
+
+  try {
+    leiturasIniciais = await carregarLeiturasDashboard();
+    sincronizadoEmInicial = new Date().toISOString();
+  } catch (erro) {
+    console.error("Falha ao carregar os dados do histórico:", erro);
+    erroInicial = "Não foi possível carregar os dados.";
+  }
+
   return (
-    <PaginaPlaceholder
-      titulo="Histórico"
-      descricao="Consulta dedicada aos registros de leitura da plataforma."
-      simbolo="≡"
+    <HistoricoInterativo
+      leiturasIniciais={leiturasIniciais}
+      sincronizadoEmInicial={sincronizadoEmInicial}
+      erroInicial={erroInicial}
     />
   );
 }

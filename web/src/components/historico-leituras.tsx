@@ -139,7 +139,7 @@ export function HistoricoLeituras({
         </div>
       ) : (
         <div className="tabela-container">
-          <table>
+          <table className="tabela-historico">
             <thead>
               <tr>
                 <th>Data e hora</th>
@@ -152,11 +152,11 @@ export function HistoricoLeituras({
             <tbody>
               {leiturasRecentes.map((leitura) => (
                 <tr key={leitura.id}>
-                  <td><span className="data-leitura">{formatarData(leitura.medidoEm)}</span></td>
-                  <td><span className="identificador-dispositivo">{leitura.dispositivoId}</span></td>
-                  <td className="altura-leitura">{formatarAltura(leitura.alturaCm)}</td>
-                  <td><IndicadorStatus status={leitura.status} compacto /></td>
-                  <td className="coluna-acoes">
+                  <td data-label="Data e hora"><span className="data-leitura">{formatarData(leitura.medidoEm)}</span></td>
+                  <td data-label="Dispositivo"><span className="identificador-dispositivo">{leitura.dispositivoId}</span></td>
+                  <td data-label="Altura" className="altura-leitura">{formatarAltura(leitura.alturaCm)}</td>
+                  <td data-label="Status"><IndicadorStatus status={leitura.status} compacto /></td>
+                  <td data-label="Ações" className="coluna-acoes">
                     <button
                       type="button"
                       className="botao-excluir-leitura"

@@ -2,13 +2,13 @@
 
 import { useMemo, useState } from "react";
 
-import { excluirLeituraAcao, limparHistoricoAcao } from "@/app/acoes-leituras";
 import { AnaliseLeituras } from "@/components/analise-leituras";
 import { CabecalhoPaginaDados } from "@/components/cabecalho-pagina-dados";
 import { CardMetrica } from "@/components/card-metrica";
 import { HistoricoLeituras } from "@/components/historico-leituras";
 import { IndicadorStatus } from "@/components/indicador-status";
 import { VisualizadorLeitura } from "@/components/visualizador-leitura";
+import { useGerenciamentoHistorico } from "@/hooks/use-gerenciamento-historico";
 import { useLeiturasAtualizaveis } from "@/hooks/use-leituras-atualizaveis";
 import {
   formatarAltura,
@@ -74,16 +74,10 @@ export function DashboardInterativo({
     [leituras],
   );
   const existemFiltrosAtivos = filtrosEstaoAtivos(filtros);
-  async function excluirLeitura(id: string): Promise<void> {
-    await excluirLeituraAcao(id);
-    setLeituras((atuais) => atuais.filter((leitura) => leitura.id !== id));
-  }
-
-  async function limparHistorico(): Promise<void> {
-    await limparHistoricoAcao();
-    setLeituras([]);
-    setFiltros(FILTROS_PADRAO);
-  }
+  const { excluirLeitura, limparHistorico } = useGerenciamentoHistorico({
+    setLeituras,
+    aoLimparHistorico: () => setFiltros(FILTROS_PADRAO),
+  });
 
   function limparFiltros() {
     setFiltros(FILTROS_PADRAO);
