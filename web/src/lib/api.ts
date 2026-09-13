@@ -140,3 +140,12 @@ export async function salvarLocalizacaoDispositivo(
 
   return resultado.dispositivo;
 }
+
+export async function carregarDadosAlertas() {
+  const [leituras, dispositivos] = await Promise.all([
+    carregarLeituras(),
+    carregarDispositivos(),
+  ]);
+
+  return { leituras, dispositivos };
+}
