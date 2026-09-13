@@ -1,4 +1,8 @@
 import type { LeituraVegetacao } from "@/types/leitura";
+import type {
+  DadosLocalizacaoDispositivo,
+  Dispositivo,
+} from "@/types/dispositivo";
 
 const URL_API = (process.env.URL_API ?? "http://localhost:3333").replace(
   /\/$/,
@@ -37,6 +41,26 @@ async function excluirNaApi<T>(caminho: string): Promise<T> {
     } | null;
     throw new Error(
       corpo?.erro ?? `A API respondeu com o código HTTP ${resposta.status}.`,
+    );
+  }
+
+  return resposta.json() as Promise<T>;
+}
+
+async function atualizarNaApi<T>(caminho: string, corpo: unknown): Promise<T> {
+  const resposta = await fetch(`${URL_API}${caminho}`, {
+    method: "PUT",
+    cache: "no-store",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(corpo),
+  });
+
+  if (!resposta.ok) {
+    const conteudo = (await resposta.json().catch(() => null)) as {
+      erro?: string;
+    } | null;
+    throw new Error(
+      conteudo?.erro ?? `A API respondeu com o código HTTP ${resposta.status}.`,
     );
   }
 
@@ -96,4 +120,23 @@ export async function limparHistorico(): Promise<number> {
   }>("/api/leituras");
 
   return resultado.quantidadeLeiturasRemovidas;
+}
+
+export async function carregarDispositivos(): Promise<Dispositivo[]> {
+  return buscarNaApi<Dispositivo[]>("/api/dispositivos");
+}
+
+export async function salvarLocalizacaoDispositivo(
+  dispositivoId: string,
+  dados: DadosLocalizacaoDispositivo,
+): Promise<Dispositivo> {
+  const resultado = await atualizarNaApi<{
+    mensagem: string;
+    dispositivo: Dispositivo;
+  }>(
+    `/api/dispositivos/${encodeURIComponent(dispositivoId)}/localizacao`,
+    dados,
+  );
+
+  return resultado.dispositivo;
 }

@@ -2,9 +2,16 @@ import express from "express";
 
 import { verificarConexaoBancoDados } from "./config/banco-de-dados";
 import { DIRETORIO_UPLOADS } from "./config/upload-imagem";
+import {
+  listarDispositivos,
+  salvarLocalizacaoDispositivo,
+} from "./modules/dispositivos/repositorio-dispositivos";
+import { criarRoteadorDispositivos } from "./modules/dispositivos/roteador-dispositivos";
 import { roteadorLeituras } from "./modules/leituras/roteador-leituras";
 
 export const aplicacao = express();
+
+aplicacao.use(express.json({ limit: "16kb" }));
 
 aplicacao.get("/api/saude", async (_requisicao, resposta) => {
   try {
@@ -19,6 +26,13 @@ aplicacao.get("/api/saude", async (_requisicao, resposta) => {
 });
 
 aplicacao.use("/api/leituras", roteadorLeituras);
+aplicacao.use(
+  "/api/dispositivos",
+  criarRoteadorDispositivos({
+    listarDispositivos,
+    salvarLocalizacaoDispositivo,
+  }),
+);
 
 aplicacao.use(
   "/uploads",
