@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+import { BarraLateral } from "@/components/barra-lateral";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Visão Geral | Monitoramento Motiva",
+  title: {
+    default: "Monitoramento Motiva",
+    template: "%s | Monitoramento Motiva",
+  },
   description: "Dashboard de monitoramento de vegetação rodoviária.",
 };
 
@@ -36,7 +41,14 @@ export default function LayoutRaiz({
       <head>
         <script dangerouslySetInnerHTML={{ __html: codigoInicializacaoTema }} />
       </head>
-      <body>{conteudo}</body>
+      <body>
+        <div className="estrutura-dashboard">
+          <BarraLateral />
+          <main className="conteudo-dashboard" id="conteudo-principal">
+            {conteudo}
+          </main>
+        </div>
+      </body>
     </html>
   );
 }

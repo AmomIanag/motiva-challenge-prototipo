@@ -1,9 +1,14 @@
-import { BarraLateral } from "@/components/barra-lateral";
+import type { Metadata } from "next";
+
 import { DashboardInterativo } from "@/components/dashboard-interativo";
 import { carregarLeiturasDashboard } from "@/lib/api";
 import type { LeituraVegetacao } from "@/types/leitura";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Visão geral",
+};
 
 export default async function PaginaInicial() {
   let leiturasIniciais: LeituraVegetacao[] = [];
@@ -19,15 +24,12 @@ export default async function PaginaInicial() {
   }
 
   return (
-    <div className="estrutura-dashboard">
-      <BarraLateral />
-      <main className="conteudo-dashboard" id="visao-geral">
-        <DashboardInterativo
-          leiturasIniciais={leiturasIniciais}
-          sincronizadoEmInicial={sincronizadoEmInicial}
-          erroInicial={erroInicial}
-        />
-      </main>
+    <div id="visao-geral">
+      <DashboardInterativo
+        leiturasIniciais={leiturasIniciais}
+        sincronizadoEmInicial={sincronizadoEmInicial}
+        erroInicial={erroInicial}
+      />
     </div>
   );
 }
