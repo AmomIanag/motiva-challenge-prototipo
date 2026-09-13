@@ -1,22 +1,18 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 
-import {
-  atualizarDashboardAcao,
-  excluirLeituraAcao,
-  limparHistoricoAcao,
-} from "@/app/acoes-leituras";
+import { excluirLeituraAcao, limparHistoricoAcao } from "@/app/acoes-leituras";
 import { AnaliseLeituras } from "@/components/analise-leituras";
+import { CabecalhoPaginaDados } from "@/components/cabecalho-pagina-dados";
 import { CardMetrica } from "@/components/card-metrica";
-import { ControleTema } from "@/components/controle-tema";
 import { HistoricoLeituras } from "@/components/historico-leituras";
 import { IndicadorStatus } from "@/components/indicador-status";
 import { VisualizadorLeitura } from "@/components/visualizador-leitura";
+import { useLeiturasAtualizaveis } from "@/hooks/use-leituras-atualizaveis";
 import {
   formatarAltura,
   formatarData,
-  formatarHorario,
   obterMensagemStatus,
 } from "@/lib/formatadores";
 import {
@@ -34,29 +30,37 @@ interface PropriedadesDashboardInterativo {
   erroInicial: string | null;
 }
 
-function IconeAtualizar({ atualizando }: { atualizando: boolean }) {
-  return (
-    <svg
-      className={atualizando ? "icone-atualizar girando" : "icone-atualizar"}
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path d="M18.4 7.2A8 8 0 1 0 20 14h-2a6 6 0 1 1-1.2-4L14 12h7V5l-2.6 2.2Z" />
-    </svg>
-  );
-}
-
 export function DashboardInterativo({
   leiturasIniciais,
   sincronizadoEmInicial,
   erroInicial,
 }: PropriedadesDashboardInterativo) {
-  const [leituras, setLeituras] = useState(leiturasIniciais);
   const [filtros, setFiltros] = useState<FiltrosLeituras>(FILTROS_PADRAO);
-  const [sincronizadoEm, setSincronizadoEm] = useState(sincronizadoEmInicial);
-  const [erroAtualizacao, setErroAtualizacao] = useState(erroInicial);
-  const [atualizando, setAtualizando] = useState(false);
-  const atualizacaoEmAndamento = useRef(false);
+  const {
+    atualizando,
+    atualizarLeituras,
+    cargaInicialFalhou,
+    erroAtualizacao,
+    leituras,
+    setLeituras,
+    sincronizadoEm,
+  } = useLeiturasAtualizaveis({
+    leiturasIniciais,
+    sincronizadoEmInicial,
+    erroInicial,
+    aoAtualizar: (leiturasAtualizadas) => {
+      const dispositivosAtualizados = new Set(
+        leiturasAtualizadas.map((leitura) => leitura.dispositivoId),
+      );
+
+      setFiltros((filtrosAtuais) =>
+        filtrosAtuais.dispositivoId === TODOS_DISPOSITIVOS ||
+        dispositivosAtualizados.has(filtrosAtuais.dispositivoId)
+          ? filtrosAtuais
+          : { ...filtrosAtuais, dispositivoId: TODOS_DISPOSITIVOS },
+      );
+    },
+  });
   const ultimaLeitura = useMemo(() => leituras.at(-1) ?? null, [leituras]);
   const leiturasFiltradas = useMemo(
     () => filtrarLeituras(leituras, filtros),
@@ -70,39 +74,6 @@ export function DashboardInterativo({
     [leituras],
   );
   const existemFiltrosAtivos = filtrosEstaoAtivos(filtros);
-  const cargaInicialFalhou = sincronizadoEm === null && erroAtualizacao !== null;
-
-  async function atualizarDashboard(): Promise<void> {
-    if (atualizacaoEmAndamento.current) {
-      return;
-    }
-
-    atualizacaoEmAndamento.current = true;
-    setAtualizando(true);
-    setErroAtualizacao(null);
-
-    try {
-      const resultado = await atualizarDashboardAcao();
-      const dispositivosAtualizados = new Set(
-        resultado.leituras.map((leitura) => leitura.dispositivoId),
-      );
-
-      setLeituras(resultado.leituras);
-      setSincronizadoEm(resultado.sincronizadoEm);
-      setFiltros((filtrosAtuais) =>
-        filtrosAtuais.dispositivoId === TODOS_DISPOSITIVOS ||
-        dispositivosAtualizados.has(filtrosAtuais.dispositivoId)
-          ? filtrosAtuais
-          : { ...filtrosAtuais, dispositivoId: TODOS_DISPOSITIVOS },
-      );
-    } catch {
-      setErroAtualizacao("Não foi possível atualizar os dados.");
-    } finally {
-      atualizacaoEmAndamento.current = false;
-      setAtualizando(false);
-    }
-  }
-
   async function excluirLeitura(id: string): Promise<void> {
     await excluirLeituraAcao(id);
     setLeituras((atuais) => atuais.filter((leitura) => leitura.id !== id));
@@ -120,37 +91,14 @@ export function DashboardInterativo({
 
   return (
     <div className="dashboard-interativo" aria-busy={atualizando}>
-      <header className="cabecalho-dashboard">
-        <div>
-          <span className="rotulo-pagina">Centro de operações</span>
-          <h1>Visão geral</h1>
-          <p>Acompanhamento da vegetação na faixa de domínio rodoviário.</p>
-        </div>
-        <div className="acoes-cabecalho">
-          <div className="estado-sincronizacao" role="status" aria-live="polite">
-            <span className="selo-ambiente">
-              <span aria-hidden="true">+</span>
-              Plataforma integrada
-            </span>
-            <span className="horario-sincronizacao">
-              {sincronizadoEm
-                ? `Atualizado às ${formatarHorario(sincronizadoEm)}`
-                : "Dados ainda não sincronizados"}
-            </span>
-          </div>
-          <button
-            type="button"
-            className="botao-atualizar"
-            disabled={atualizando}
-            aria-label={atualizando ? "Atualizando dados" : "Atualizar dados do dashboard"}
-            onClick={atualizarDashboard}
-          >
-            <IconeAtualizar atualizando={atualizando} />
-            <span>{atualizando ? "Atualizando…" : "Atualizar"}</span>
-          </button>
-          <ControleTema />
-        </div>
-      </header>
+      <CabecalhoPaginaDados
+        rotulo="Centro de operações"
+        titulo="Visão geral"
+        descricao="Acompanhamento da vegetação na faixa de domínio rodoviário."
+        sincronizadoEm={sincronizadoEm}
+        atualizando={atualizando}
+        aoAtualizar={atualizarLeituras}
+      />
 
       {cargaInicialFalhou ? (
         <section className="estado-dashboard estado-erro" role="alert">
@@ -161,7 +109,7 @@ export function DashboardInterativo({
             type="button"
             className="botao-tentar-novamente"
             disabled={atualizando}
-            onClick={atualizarDashboard}
+            onClick={atualizarLeituras}
           >
             {atualizando ? "Tentando novamente…" : "Tentar novamente"}
           </button>
@@ -177,7 +125,7 @@ export function DashboardInterativo({
               <button
                 type="button"
                 disabled={atualizando}
-                onClick={atualizarDashboard}
+                onClick={atualizarLeituras}
               >
                 Tentar novamente
               </button>
