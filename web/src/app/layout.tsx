@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { BarraLateral } from "@/components/barra-lateral";
 
+import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
 export const metadata: Metadata = {

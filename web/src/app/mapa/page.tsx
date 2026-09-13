@@ -1,23 +1,40 @@
 import type { Metadata } from "next";
 
-import { ConfiguracaoLocalizacao } from "@/components/configuracao-localizacao";
 import { ControleTema } from "@/components/controle-tema";
-import { carregarDispositivos } from "@/lib/api";
+import { MapaGeorreferenciado } from "@/components/mapa-georreferenciado";
+import { carregarDispositivos, carregarLeituras } from "@/lib/api";
 import type { Dispositivo } from "@/types/dispositivo";
+import type { LeituraVegetacao } from "@/types/leitura";
 
 export const metadata: Metadata = { title: "Mapa" };
 
 export default async function PaginaMapa() {
   let dispositivos: Dispositivo[] = [];
-  let erroInicial: string | null = null;
+  let leituras: LeituraVegetacao[] = [];
+  let erroDispositivos: string | null = null;
+  let erroLeituras: string | null = null;
 
-  try {
-    dispositivos = await carregarDispositivos();
-  } catch (falha) {
-    erroInicial =
-      falha instanceof Error
-        ? falha.message
+  const [resultadoDispositivos, resultadoLeituras] = await Promise.allSettled([
+    carregarDispositivos(),
+    carregarLeituras(),
+  ]);
+
+  if (resultadoDispositivos.status === "fulfilled") {
+    dispositivos = resultadoDispositivos.value;
+  } else {
+    erroDispositivos =
+      resultadoDispositivos.reason instanceof Error
+        ? resultadoDispositivos.reason.message
         : "Não foi possível consultar os dispositivos.";
+  }
+
+  if (resultadoLeituras.status === "fulfilled") {
+    leituras = resultadoLeituras.value;
+  } else {
+    erroLeituras =
+      resultadoLeituras.reason instanceof Error
+        ? resultadoLeituras.reason.message
+        : "Não foi possível consultar as leituras.";
   }
 
   return (
@@ -26,16 +43,18 @@ export default async function PaginaMapa() {
         <div>
           <span className="rotulo-pagina">Estrutura geográfica</span>
           <h1>Mapa</h1>
-          <p>Configure a localização dos dispositivos instalados em campo.</p>
+          <p>Visualização georreferenciada dos pontos monitorados.</p>
         </div>
         <div className="acoes-cabecalho">
           <ControleTema />
         </div>
       </header>
 
-      <ConfiguracaoLocalizacao
+      <MapaGeorreferenciado
         dispositivosIniciais={dispositivos}
-        erroInicial={erroInicial}
+        leiturasIniciais={leituras}
+        erroDispositivos={erroDispositivos}
+        erroLeituras={erroLeituras}
       />
     </>
   );

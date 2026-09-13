@@ -12,6 +12,7 @@ import type {
 interface PropriedadesConfiguracaoLocalizacao {
   dispositivosIniciais: Dispositivo[];
   erroInicial: string | null;
+  aoDispositivoAtualizado?: (dispositivo: Dispositivo) => void;
 }
 
 interface CamposFormulario {
@@ -55,6 +56,7 @@ function formatarAtualizacao(valor: string | null): string {
 export function ConfiguracaoLocalizacao({
   dispositivosIniciais,
   erroInicial,
+  aoDispositivoAtualizado,
 }: PropriedadesConfiguracaoLocalizacao) {
   const [dispositivos, setDispositivos] = useState(dispositivosIniciais);
   const [dispositivoId, setDispositivoId] = useState(
@@ -233,6 +235,7 @@ export function ConfiguracaoLocalizacao({
       setCampos(camposDoDispositivo(atualizado));
       setAlterado(false);
       setMensagem("Localização salva com sucesso.");
+      aoDispositivoAtualizado?.(atualizado);
     } catch (falha) {
       setErro(
         falha instanceof Error
@@ -269,7 +272,11 @@ export function ConfiguracaoLocalizacao({
   }
 
   return (
-    <section className="painel painel-localizacao" aria-labelledby="titulo-localizacao">
+    <section
+      className="painel painel-localizacao"
+      id="configuracao-localizacao"
+      aria-labelledby="titulo-localizacao"
+    >
       <div className="painel-cabecalho cabecalho-localizacao">
         <div>
           <span className="rotulo-secao">Ponto monitorado</span>

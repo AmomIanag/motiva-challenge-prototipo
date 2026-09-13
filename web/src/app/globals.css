@@ -1990,6 +1990,358 @@ th:nth-child(3) {
   height: 520px;
 }
 
+.pagina-mapa {
+  display: grid;
+  gap: 18px;
+}
+
+.painel-visualizacao-mapa {
+  overflow: hidden;
+}
+
+.cabecalho-visualizacao-mapa p {
+  margin: 6px 0 0;
+  color: var(--cor-neutro-500);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.contador-pontos {
+  flex: 0 0 auto;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: var(--cor-roxo-050);
+  color: var(--cor-roxo-700);
+  font-size: 0.68rem;
+  font-weight: 750;
+}
+
+.estado-sem-pontos,
+.mapa-carregando,
+.mapa-indisponivel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.estado-sem-pontos {
+  min-height: 340px;
+  margin-top: 22px;
+  padding: 38px;
+  border: 1px dashed var(--cor-neutro-300);
+  border-radius: var(--raio-medio);
+  background:
+    radial-gradient(circle at 50% 20%, var(--cor-roxo-050), transparent 52%),
+    var(--cor-neutro-050);
+}
+
+.estado-sem-pontos h3 {
+  margin: 0;
+  color: var(--cor-neutro-950);
+  font-size: 1rem;
+}
+
+.estado-sem-pontos p {
+  max-width: 450px;
+  margin: 8px 0 0;
+  color: var(--cor-neutro-500);
+  font-size: 0.77rem;
+  line-height: 1.55;
+}
+
+.botao-configurar-localizacao {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 18px;
+  padding: 0 16px;
+  border-radius: 10px;
+  background: var(--cor-roxo-600);
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.botao-configurar-localizacao:hover {
+  filter: brightness(0.94);
+}
+
+.botao-configurar-localizacao:focus-visible,
+.aviso-mapa a:focus-visible,
+.ponto-lista:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--cor-roxo-500) 28%, transparent);
+  outline-offset: 2px;
+}
+
+.aviso-mapa {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 18px;
+  padding: 11px 13px;
+  border: 1px solid var(--cor-neutro-200);
+  border-radius: 10px;
+  background: var(--cor-neutro-050);
+  color: var(--cor-neutro-600);
+  font-size: 0.71rem;
+}
+
+.aviso-mapa strong {
+  color: var(--cor-neutro-800);
+}
+
+.aviso-mapa a {
+  margin-left: auto;
+  color: var(--cor-roxo-700);
+  font-weight: 750;
+}
+
+.aviso-mapa.erro {
+  align-items: flex-start;
+  flex-direction: column;
+  border-color: color-mix(in srgb, var(--cor-perigo) 25%, var(--cor-neutro-200));
+  background: var(--cor-perigo-fundo);
+  color: var(--cor-perigo);
+}
+
+.aviso-mapa.erro strong {
+  color: var(--cor-perigo);
+}
+
+.grade-visualizacao-mapa {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(290px, 0.7fr);
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.mapa-leaflet,
+.mapa-carregando,
+.mapa-indisponivel {
+  width: 100%;
+  height: 500px;
+  border: 1px solid var(--cor-neutro-200);
+  border-radius: var(--raio-medio);
+  background: var(--cor-neutro-100);
+}
+
+.mapa-leaflet {
+  z-index: 0;
+  font-family: var(--fonte-principal);
+}
+
+.mapa-carregando {
+  color: var(--cor-neutro-500);
+  font-size: 0.78rem;
+}
+
+.mapa-indisponivel {
+  gap: 7px;
+  padding: 28px;
+  color: var(--cor-neutro-600);
+  font-size: 0.76rem;
+}
+
+.mapa-indisponivel strong {
+  color: var(--cor-neutro-800);
+  font-size: 0.92rem;
+}
+
+.mapa-leaflet .leaflet-control-zoom a,
+.mapa-leaflet .leaflet-control-attribution,
+.mapa-leaflet .leaflet-popup-content-wrapper,
+.mapa-leaflet .leaflet-popup-tip {
+  background: var(--cor-superficie);
+  color: var(--cor-neutro-700);
+}
+
+.mapa-leaflet .leaflet-control-zoom a {
+  border-color: var(--cor-neutro-200);
+}
+
+.mapa-leaflet .leaflet-control-zoom a:focus-visible {
+  outline: 3px solid var(--cor-roxo-500);
+  outline-offset: 2px;
+}
+
+.mapa-leaflet .leaflet-control-attribution {
+  color: var(--cor-neutro-600);
+  font-size: 9px;
+}
+
+.mapa-leaflet .leaflet-control-attribution a {
+  color: var(--cor-roxo-700);
+}
+
+.mapa-leaflet .leaflet-popup-content-wrapper {
+  border: 1px solid var(--cor-neutro-200);
+  border-radius: 11px;
+  box-shadow: 0 12px 32px rgb(22 16 36 / 20%);
+}
+
+.mapa-leaflet .leaflet-popup-content {
+  display: flex;
+  min-width: 170px;
+  flex-direction: column;
+  gap: 4px;
+  margin: 14px 16px;
+}
+
+.mapa-leaflet .leaflet-popup-content strong {
+  color: var(--cor-neutro-950);
+  font-size: 0.78rem;
+}
+
+.mapa-leaflet .leaflet-popup-content span {
+  color: var(--cor-neutro-700);
+  font-size: 0.72rem;
+}
+
+.mapa-leaflet .leaflet-popup-content small {
+  color: var(--cor-neutro-500);
+  font-size: 0.64rem;
+}
+
+.painel-lateral-pontos {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.detalhes-ponto {
+  padding: 18px;
+  border: 1px solid var(--cor-neutro-200);
+  border-radius: var(--raio-medio);
+  background: var(--cor-neutro-050);
+}
+
+.detalhes-ponto-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.detalhes-ponto-topo h3 {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--cor-neutro-950);
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 0.88rem;
+}
+
+.status-neutro {
+  background: var(--cor-neutro-200);
+  color: var(--cor-neutro-600);
+}
+
+.detalhes-ponto .indicador-status {
+  flex: 0 0 auto;
+  padding: 6px 8px;
+  font-size: 0.65rem;
+}
+
+.dados-ponto {
+  display: grid;
+  margin: 16px 0 0;
+}
+
+.dados-ponto > div {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 9px 0;
+  border-top: 1px solid var(--cor-neutro-200);
+}
+
+.dados-ponto dt {
+  color: var(--cor-neutro-500);
+  font-size: 0.65rem;
+}
+
+.dados-ponto dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--cor-neutro-800);
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: right;
+}
+
+.lista-pontos {
+  padding: 14px;
+  border: 1px solid var(--cor-neutro-200);
+  border-radius: var(--raio-medio);
+}
+
+.lista-pontos-titulo {
+  display: block;
+  margin: 0 4px 9px;
+  color: var(--cor-neutro-500);
+  font-size: 0.64rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ponto-lista {
+  display: flex;
+  width: 100%;
+  min-height: 52px;
+  align-items: center;
+  gap: 11px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--cor-neutro-700);
+  cursor: pointer;
+  text-align: left;
+}
+
+.ponto-lista:hover,
+.ponto-lista.selecionado {
+  background: var(--cor-roxo-050);
+}
+
+.ponto-lista-indicador {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.ponto-lista > span:last-child {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ponto-lista strong {
+  overflow: hidden;
+  color: var(--cor-neutro-800);
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 0.7rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ponto-lista small {
+  color: var(--cor-neutro-500);
+  font-size: 0.64rem;
+}
+
 @keyframes carregar {
   to {
     transform: translateX(100%);
@@ -2003,6 +2355,15 @@ th:nth-child(3) {
 }
 
 @media (max-width: 1180px) {
+  .grade-visualizacao-mapa {
+    grid-template-columns: 1fr;
+  }
+
+  .painel-lateral-pontos {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 0.55fr);
+  }
+
   .grade-metricas {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2151,6 +2512,44 @@ th:nth-child(3) {
 
   .painel {
     padding: 20px;
+  }
+
+  .cabecalho-visualizacao-mapa,
+  .aviso-mapa {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .contador-pontos {
+    width: 100%;
+    text-align: center;
+  }
+
+  .aviso-mapa a {
+    margin-left: 0;
+  }
+
+  .estado-sem-pontos {
+    min-height: 300px;
+    padding: 28px 20px;
+  }
+
+  .botao-configurar-localizacao {
+    width: 100%;
+  }
+
+  .mapa-leaflet,
+  .mapa-carregando,
+  .mapa-indisponivel {
+    height: 360px;
+  }
+
+  .painel-lateral-pontos {
+    display: flex;
+  }
+
+  .detalhes-ponto-topo {
+    flex-direction: column;
   }
 
   .cabecalho-localizacao,
