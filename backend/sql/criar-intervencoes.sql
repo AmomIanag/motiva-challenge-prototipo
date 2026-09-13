@@ -1,33 +1,3 @@
-CREATE TABLE IF NOT EXISTS leituras (
-  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  dispositivo_id VARCHAR(100) NOT NULL CHECK (BTRIM(dispositivo_id) <> ''),
-  altura_cm NUMERIC(6, 2) NOT NULL CHECK (altura_cm >= 0),
-  status VARCHAR(10) NOT NULL CHECK (status IN ('seguro', 'cuidado', 'perigo')),
-  medido_em TIMESTAMPTZ NOT NULL,
-  nome_imagem VARCHAR(255),
-  nome_imagem_diagnostico VARCHAR(255)
-);
-
-CREATE INDEX IF NOT EXISTS indice_leituras_medido_em
-  ON leituras (medido_em DESC);
-
-CREATE TABLE IF NOT EXISTS dispositivos (
-  dispositivo_id VARCHAR(100) PRIMARY KEY CHECK (BTRIM(dispositivo_id) <> ''),
-  rodovia VARCHAR(100),
-  km VARCHAR(50),
-  sentido VARCHAR(100),
-  trecho VARCHAR(255),
-  latitude DOUBLE PRECISION CHECK (latitude BETWEEN -90 AND 90),
-  longitude DOUBLE PRECISION CHECK (longitude BETWEEN -180 AND 180),
-  origem_localizacao VARCHAR(30)
-    CHECK (
-      origem_localizacao IS NULL
-      OR origem_localizacao IN ('manual', 'navegador')
-    ),
-  localizacao_atualizada_em TIMESTAMPTZ,
-  CHECK ((latitude IS NULL) = (longitude IS NULL))
-);
-
 CREATE TABLE IF NOT EXISTS intervencoes (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   leitura_id BIGINT UNIQUE REFERENCES leituras(id) ON DELETE SET NULL,

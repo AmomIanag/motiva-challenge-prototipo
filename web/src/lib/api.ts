@@ -1,4 +1,5 @@
 import type { LeituraVegetacao } from "@/types/leitura";
+import type { Intervencao, StatusIntervencao } from "@/types/intervencao";
 import type {
   DadosLocalizacaoDispositivo,
   Dispositivo,
@@ -50,6 +51,30 @@ async function excluirNaApi<T>(caminho: string): Promise<T> {
 async function atualizarNaApi<T>(caminho: string, corpo: unknown): Promise<T> {
   const resposta = await fetch(`${URL_API}${caminho}`, {
     method: "PUT",
+    cache: "no-store",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(corpo),
+  });
+
+  if (!resposta.ok) {
+    const conteudo = (await resposta.json().catch(() => null)) as {
+      erro?: string;
+    } | null;
+    throw new Error(
+      conteudo?.erro ?? `A API respondeu com o código HTTP ${resposta.status}.`,
+    );
+  }
+
+  return resposta.json() as Promise<T>;
+}
+
+async function enviarParaApi<T>(
+  caminho: string,
+  metodo: "POST" | "PATCH",
+  corpo: unknown,
+): Promise<T> {
+  const resposta = await fetch(`${URL_API}${caminho}`, {
+    method: metodo,
     cache: "no-store",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(corpo),
@@ -142,10 +167,43 @@ export async function salvarLocalizacaoDispositivo(
 }
 
 export async function carregarDadosAlertas() {
-  const [leituras, dispositivos] = await Promise.all([
+  const [leituras, dispositivos, intervencoes] = await Promise.all([
     carregarLeituras(),
     carregarDispositivos(),
+    carregarIntervencoes(),
   ]);
 
-  return { leituras, dispositivos };
+  return { leituras, dispositivos, intervencoes };
+}
+
+export async function carregarIntervencoes(): Promise<Intervencao[]> {
+  return buscarNaApi<Intervencao[]>("/api/intervencoes");
+}
+
+export async function carregarDadosIntervencoes() {
+  return {
+    intervencoes: await carregarIntervencoes(),
+    sincronizadoEm: new Date().toISOString(),
+  };
+}
+
+export async function criarIntervencao(leituraId: string): Promise<Intervencao> {
+  const resultado = await enviarParaApi<{
+    mensagem: string;
+    intervencao: Intervencao;
+  }>("/api/intervencoes", "POST", { leituraId });
+
+  return resultado.intervencao;
+}
+
+export async function atualizarStatusIntervencao(
+  id: string,
+  status: StatusIntervencao,
+): Promise<Intervencao> {
+  const resultado = await enviarParaApi<{
+    mensagem: string;
+    intervencao: Intervencao;
+  }>(`/api/intervencoes/${encodeURIComponent(id)}/status`, "PATCH", { status });
+
+  return resultado.intervencao;
 }

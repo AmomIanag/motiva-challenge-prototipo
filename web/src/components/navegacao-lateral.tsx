@@ -8,6 +8,7 @@ const itensNavegacao = [
   { rotulo: "Monitoramento", simbolo: "◎", caminho: "/monitoramento" },
   { rotulo: "Mapa", simbolo: "⌖", caminho: "/mapa" },
   { rotulo: "Alertas", simbolo: "!", caminho: "/alertas" },
+  { rotulo: "Intervenções", simbolo: "↗", caminho: "/intervencoes" },
   { rotulo: "Histórico", simbolo: "≡", caminho: "/historico" },
   { rotulo: "Dispositivos", simbolo: "◇", caminho: "/dispositivos" },
   { rotulo: "Relatórios", simbolo: "▤", caminho: "/relatorios" },

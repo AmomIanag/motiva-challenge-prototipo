@@ -7,6 +7,12 @@ import {
   salvarLocalizacaoDispositivo,
 } from "./modules/dispositivos/repositorio-dispositivos";
 import { criarRoteadorDispositivos } from "./modules/dispositivos/roteador-dispositivos";
+import {
+  atualizarStatusIntervencao,
+  criarIntervencao,
+  listarIntervencoes,
+} from "./modules/intervencoes/repositorio-intervencoes";
+import { criarRoteadorIntervencoes } from "./modules/intervencoes/roteador-intervencoes";
 import { roteadorLeituras } from "./modules/leituras/roteador-leituras";
 
 export const aplicacao = express();
@@ -31,6 +37,14 @@ aplicacao.use(
   criarRoteadorDispositivos({
     listarDispositivos,
     salvarLocalizacaoDispositivo,
+  }),
+);
+aplicacao.use(
+  "/api/intervencoes",
+  criarRoteadorIntervencoes({
+    listarIntervencoes,
+    criarIntervencao,
+    atualizarStatusIntervencao,
   }),
 );
 

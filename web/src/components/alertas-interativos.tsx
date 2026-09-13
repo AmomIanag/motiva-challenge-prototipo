@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 
 import { atualizarAlertasAcao } from "@/app/acoes-alertas";
+import { criarIntervencaoAcao } from "@/app/acoes-intervencoes";
 import { CabecalhoPaginaDados } from "@/components/cabecalho-pagina-dados";
 import { IndicadorStatus } from "@/components/indicador-status";
 import {
@@ -14,12 +15,14 @@ import {
 import { formatarAltura, formatarData } from "@/lib/formatadores";
 import type { Dispositivo } from "@/types/dispositivo";
 import type { LeituraVegetacao } from "@/types/leitura";
+import type { Intervencao } from "@/types/intervencao";
 
 type FiltroAlertas = "todos" | NivelAlerta;
 
 interface PropriedadesAlertasInterativos {
   leiturasIniciais: LeituraVegetacao[];
   dispositivosIniciais: Dispositivo[];
+  intervencoesIniciais: Intervencao[];
   sincronizadoEmInicial: string | null;
   erroInicial: string | null;
 }
@@ -46,7 +49,19 @@ function descricaoLocalizacao(dispositivo: Dispositivo | null): string {
   return partes.join(" · ") || "Localização operacional não cadastrada";
 }
 
-function CardAlerta({ alerta }: { alerta: AlertaOperacional }) {
+function CardAlerta({
+  alerta,
+  intervencao,
+  criando,
+  bloqueado,
+  aoCriarIntervencao,
+}: {
+  alerta: AlertaOperacional;
+  intervencao: Intervencao | null;
+  criando: boolean;
+  bloqueado: boolean;
+  aoCriarIntervencao: (leituraId: string) => void;
+}) {
   const { dispositivo, dispositivoId, leitura, nivel } = alerta;
 
   return (
@@ -84,11 +99,26 @@ function CardAlerta({ alerta }: { alerta: AlertaOperacional }) {
             <span>Última leitura</span>
             <time dateTime={leitura.medidoEm}>{formatarData(leitura.medidoEm)}</time>
           </div>
-          {coordenadasValidas(dispositivo) ? (
-            <Link className="acao-ver-mapa" href="/mapa">
-              Ver no mapa
-            </Link>
-          ) : null}
+          <div className="acoes-alerta">
+            {coordenadasValidas(dispositivo) ? (
+              <Link className="acao-ver-mapa" href="/mapa">Ver no mapa</Link>
+            ) : null}
+            {intervencao ? (
+              <Link className="acao-intervencao-criada" href={`/intervencoes#intervencao-${intervencao.id}`}>
+                Ver intervenção
+              </Link>
+            ) : (
+              <button
+                className="botao-criar-intervencao"
+                type="button"
+                disabled={bloqueado}
+                onClick={() => aoCriarIntervencao(leitura.id)}
+                aria-label={`Criar intervenção para a leitura ${leitura.id} do dispositivo ${dispositivoId}`}
+              >
+                {criando ? "Criando…" : "Criar intervenção"}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </article>
@@ -98,16 +128,21 @@ function CardAlerta({ alerta }: { alerta: AlertaOperacional }) {
 export function AlertasInterativos({
   leiturasIniciais,
   dispositivosIniciais,
+  intervencoesIniciais,
   sincronizadoEmInicial,
   erroInicial,
 }: PropriedadesAlertasInterativos) {
   const [leituras, setLeituras] = useState(leiturasIniciais);
   const [dispositivos, setDispositivos] = useState(dispositivosIniciais);
+  const [intervencoes, setIntervencoes] = useState(intervencoesIniciais);
   const [sincronizadoEm, setSincronizadoEm] = useState(sincronizadoEmInicial);
   const [erroAtualizacao, setErroAtualizacao] = useState(erroInicial);
   const [atualizando, setAtualizando] = useState(false);
+  const [criandoLeituraId, setCriandoLeituraId] = useState<string | null>(null);
+  const [sucesso, setSucesso] = useState<string | null>(null);
   const [filtro, setFiltro] = useState<FiltroAlertas>("todos");
   const atualizacaoEmAndamento = useRef(false);
+  const criacaoEmAndamento = useRef(false);
 
   const alertas = useMemo(
     () => derivarAlertasOperacionais(leituras, dispositivos),
@@ -122,16 +157,18 @@ export function AlertasInterativos({
   const cargaInicialFalhou = sincronizadoEm === null && erroAtualizacao !== null;
 
   async function atualizarAlertas() {
-    if (atualizacaoEmAndamento.current) return;
+    if (atualizacaoEmAndamento.current || criacaoEmAndamento.current) return;
 
     atualizacaoEmAndamento.current = true;
     setAtualizando(true);
     setErroAtualizacao(null);
+    setSucesso(null);
 
     try {
       const resultado = await atualizarAlertasAcao();
       setLeituras(resultado.leituras);
       setDispositivos(resultado.dispositivos);
+      setIntervencoes(resultado.intervencoes);
       setSincronizadoEm(resultado.sincronizadoEm);
     } catch {
       setErroAtualizacao("Não foi possível atualizar os alertas.");
@@ -141,8 +178,39 @@ export function AlertasInterativos({
     }
   }
 
+  async function criarIntervencaoParaLeitura(leituraId: string) {
+    if (criacaoEmAndamento.current || atualizacaoEmAndamento.current) return;
+
+    criacaoEmAndamento.current = true;
+    setCriandoLeituraId(leituraId);
+    setErroAtualizacao(null);
+    setSucesso(null);
+
+    try {
+      const resultado = await criarIntervencaoAcao(leituraId);
+      if (!resultado.sucesso) {
+        setErroAtualizacao(resultado.erro);
+        return;
+      }
+
+      setIntervencoes((atuais) => [resultado.intervencao, ...atuais]);
+      setSucesso(`Intervenção #${resultado.intervencao.id} criada com sucesso.`);
+      setSincronizadoEm(new Date().toISOString());
+    } catch (falha) {
+      setErroAtualizacao(
+        falha instanceof Error ? falha.message : "Não foi possível criar a intervenção.",
+      );
+    } finally {
+      criacaoEmAndamento.current = false;
+      setCriandoLeituraId(null);
+    }
+  }
+
   return (
-    <div className="dashboard-interativo alertas-interativos" aria-busy={atualizando}>
+    <div
+      className="dashboard-interativo alertas-interativos"
+      aria-busy={atualizando || criandoLeituraId !== null}
+    >
       <CabecalhoPaginaDados
         rotulo="Acompanhamento operacional"
         titulo="Alertas"
@@ -177,6 +245,12 @@ export function AlertasInterativos({
               <button type="button" disabled={atualizando} onClick={atualizarAlertas}>
                 Tentar novamente
               </button>
+            </div>
+          ) : null}
+          {sucesso ? (
+            <div className="aviso-sucesso" role="status">
+              <span>{sucesso}</span>
+              <Link href="/intervencoes">Ver intervenções</Link>
             </div>
           ) : null}
 
@@ -247,7 +321,18 @@ export function AlertasInterativos({
             ) : (
               <div className="lista-alertas">
                 {alertasFiltrados.map((alerta) => (
-                  <CardAlerta key={alerta.dispositivoId} alerta={alerta} />
+                  <CardAlerta
+                    key={alerta.dispositivoId}
+                    alerta={alerta}
+                    intervencao={
+                      intervencoes.find(
+                        ({ leituraId }) => leituraId === alerta.leitura.id,
+                      ) ?? null
+                    }
+                    criando={criandoLeituraId === alerta.leitura.id}
+                    bloqueado={criandoLeituraId !== null || atualizando}
+                    aoCriarIntervencao={criarIntervencaoParaLeitura}
+                  />
                 ))}
               </div>
             )}
