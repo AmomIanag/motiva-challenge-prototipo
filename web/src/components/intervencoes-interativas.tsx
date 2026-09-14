@@ -10,6 +10,12 @@ import {
 import { CabecalhoPaginaDados } from "@/components/cabecalho-pagina-dados";
 import { IndicadorStatus } from "@/components/indicador-status";
 import { formatarAltura, formatarData } from "@/lib/formatadores";
+import {
+  coordenadasIntervencaoValidas,
+  formatarLocalizacaoIntervencao,
+  obterProximoStatusIntervencao,
+  ROTULOS_STATUS_INTERVENCAO,
+} from "@/lib/intervencoes";
 import type { Intervencao, StatusIntervencao } from "@/types/intervencao";
 
 type FiltroIntervencao = "todas" | StatusIntervencao;
@@ -19,12 +25,6 @@ interface PropriedadesIntervencoesInterativas {
   sincronizadoEmInicial: string | null;
   erroInicial: string | null;
 }
-
-const rotulosStatus: Record<StatusIntervencao, string> = {
-  pendente: "Pendente",
-  em_atendimento: "Em atendimento",
-  concluida: "Concluída",
-};
 
 const prioridadeStatus: Record<StatusIntervencao, number> = {
   pendente: 0,
@@ -42,25 +42,6 @@ function ordenarIntervencoes(intervencoes: Intervencao[]): Intervencao[] {
 
     return Date.parse(b.criadaEm) - Date.parse(a.criadaEm);
   });
-}
-
-function descricaoLocalizacao(intervencao: Intervencao): string {
-  const partes = [
-    intervencao.rodovia,
-    intervencao.km ? `Km ${intervencao.km}` : null,
-    intervencao.sentido ? `Sentido ${intervencao.sentido}` : null,
-  ].filter(Boolean);
-
-  return partes.join(" · ") || "Localização operacional não cadastrada.";
-}
-
-function coordenadasValidas(intervencao: Intervencao): boolean {
-  return (
-    intervencao.latitude !== null &&
-    intervencao.longitude !== null &&
-    Number.isFinite(intervencao.latitude) &&
-    Number.isFinite(intervencao.longitude)
-  );
 }
 
 function LinhaData({ rotulo, valor }: { rotulo: string; valor: string | null }) {
@@ -85,12 +66,7 @@ function CardIntervencao({
   bloqueado: boolean;
   aoAlterarStatus: (id: string, status: StatusIntervencao) => void;
 }) {
-  const proximoStatus =
-    intervencao.status === "pendente"
-      ? "em_atendimento"
-      : intervencao.status === "em_atendimento"
-        ? "concluida"
-        : null;
+  const proximoStatus = obterProximoStatusIntervencao(intervencao.status);
 
   return (
     <article
@@ -107,7 +83,7 @@ function CardIntervencao({
             Prioridade {intervencao.prioridade}
           </span>
           <span className={`selo-status-intervencao status-${intervencao.status}`}>
-            {rotulosStatus[intervencao.status]}
+            {ROTULOS_STATUS_INTERVENCAO[intervencao.status]}
           </span>
         </div>
       </div>
@@ -130,10 +106,10 @@ function CardIntervencao({
       <div className="localizacao-intervencao">
         <span aria-hidden="true">⌖</span>
         <div>
-          <strong>{descricaoLocalizacao(intervencao)}</strong>
+          <strong>{formatarLocalizacaoIntervencao(intervencao)}</strong>
           {intervencao.trecho ? <small>{intervencao.trecho}</small> : null}
         </div>
-        {coordenadasValidas(intervencao) ? <Link href="/mapa">Ver no mapa</Link> : null}
+        {coordenadasIntervencaoValidas(intervencao) ? <Link href="/mapa">Ver no mapa</Link> : null}
       </div>
 
       <div className="datas-intervencao">
@@ -270,6 +246,14 @@ export function IntervencoesInterativas({
         atualizando={atualizando}
         aoAtualizar={atualizarIntervencoes}
       />
+
+      <div className="atalho-modo-campo">
+        <div>
+          <strong>Execução em campo</strong>
+          <span>Interface simplificada para acompanhar e executar os serviços.</span>
+        </div>
+        <Link href="/campo">Abrir modo campo</Link>
+      </div>
 
       {cargaInicialFalhou ? (
         <section className="estado-dashboard estado-erro" role="alert">
