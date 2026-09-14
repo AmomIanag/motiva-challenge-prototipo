@@ -7,6 +7,7 @@ import { Botao } from "@/components/botao";
 import { CabecalhoAplicativo } from "@/components/cabecalho-aplicativo";
 import { CampoDetalhe } from "@/components/campo-detalhe";
 import { Cartao } from "@/components/cartao";
+import { LocalizacaoIntervencao } from "@/components/localizacao-intervencao";
 import { Selo } from "@/components/selo";
 import { Tela } from "@/components/tela";
 import { listarIntervencoes } from "@/services/intervencoes";
@@ -15,7 +16,6 @@ import type { Intervencao } from "@/types/intervencao";
 import {
   formatarAltura,
   formatarDataHora,
-  formatarLocalizacao,
   ROTULOS_PRIORIDADE,
   ROTULOS_STATUS,
 } from "@/utils/intervencoes";
@@ -75,13 +75,6 @@ export default function DetalheServico() {
     else router.replace("/servicos");
   }
 
-  const coordenadas =
-    intervencao?.latitude !== null &&
-    intervencao?.latitude !== undefined &&
-    intervencao.longitude !== null
-      ? `${intervencao.latitude.toFixed(6)}, ${intervencao.longitude.toFixed(6)}`
-      : "Não cadastradas";
-
   return (
     <Tela aoAtualizar={() => void carregar(true)} atualizando={atualizando}>
       <CabecalhoAplicativo tituloSecundario="Detalhe do serviço" />
@@ -130,16 +123,17 @@ export default function DetalheServico() {
               <CampoDetalhe rotulo="Altura detectada" valor={formatarAltura(intervencao.alturaCm)} />
               <CampoDetalhe rotulo="Status da leitura de origem" valor={rotulosStatusLeitura[intervencao.statusLeitura]} />
               <CampoDetalhe rotulo="Data e hora da detecção" valor={formatarDataHora(intervencao.medidoEm)} />
-              <CampoDetalhe rotulo="Localização operacional" valor={formatarLocalizacao(intervencao)} />
-              <CampoDetalhe rotulo="Rodovia" valor={intervencao.rodovia || "Não cadastrada"} />
-              <CampoDetalhe rotulo="Km" valor={intervencao.km || "Não cadastrado"} />
-              <CampoDetalhe rotulo="Sentido" valor={intervencao.sentido || "Não cadastrado"} />
-              <CampoDetalhe rotulo="Trecho" valor={intervencao.trecho || "Não cadastrado"} />
-              <CampoDetalhe rotulo="Coordenadas" valor={coordenadas} />
               <CampoDetalhe rotulo="Intervenção criada em" valor={formatarDataHora(intervencao.criadaEm)} />
               <CampoDetalhe rotulo="Atendimento iniciado em" valor={formatarDataHora(intervencao.iniciadaEm)} />
               <CampoDetalhe rotulo="Intervenção concluída em" valor={formatarDataHora(intervencao.concluidaEm)} />
             </Cartao>
+
+            <LocalizacaoIntervencao
+              aoVisualizarMapa={() =>
+                router.push({ pathname: "/servicos/[id]/mapa", params: { id: intervencao.id } })
+              }
+              intervencao={intervencao}
+            />
 
             <AcaoIntervencao aoAtualizar={setIntervencao} intervencao={intervencao} />
           </>

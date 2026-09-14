@@ -1,4 +1,5 @@
 import type { Intervencao, PrioridadeIntervencao, StatusIntervencao } from "@/types/intervencao";
+import { formatarCoordenadas, obterCoordenadasValidas, textoLocalizacao } from "@/utils/localizacao";
 
 export type FiltroIntervencao = "abertas" | StatusIntervencao;
 
@@ -69,11 +70,16 @@ export function formatarDataHora(valor: string | null): string {
 
 export function formatarLocalizacao(intervencao: Intervencao): string {
   const partes = [
-    intervencao.rodovia,
-    intervencao.km ? `Km ${intervencao.km}` : null,
-    intervencao.sentido ? `Sentido ${intervencao.sentido}` : null,
-    intervencao.trecho,
+    textoLocalizacao(intervencao.rodovia),
+    textoLocalizacao(intervencao.km) ? `Km ${textoLocalizacao(intervencao.km)}` : null,
+    textoLocalizacao(intervencao.sentido) ? `Sentido ${textoLocalizacao(intervencao.sentido)}` : null,
+    textoLocalizacao(intervencao.trecho),
   ].filter((parte): parte is string => Boolean(parte));
 
-  return partes.join(" · ") || "Localização operacional não cadastrada.";
+  if (partes.length > 0) return partes.join(" · ");
+
+  const coordenadas = obterCoordenadasValidas(intervencao);
+  return coordenadas
+    ? formatarCoordenadas(coordenadas)
+    : "Localização operacional não cadastrada.";
 }
