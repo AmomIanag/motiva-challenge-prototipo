@@ -185,6 +185,16 @@ export async function carregarDadosAlertas() {
   return { leituras, dispositivos, intervencoes };
 }
 
+export async function carregarDadosRelatorios() {
+  const [leituras, dispositivos, intervencoes] = await Promise.all([
+    carregarLeituras(),
+    carregarDispositivos(),
+    carregarIntervencoes(),
+  ]);
+
+  return { leituras, dispositivos, intervencoes };
+}
+
 export async function carregarIntervencoes(): Promise<Intervencao[]> {
   return buscarNaApi<Intervencao[]>("/api/intervencoes");
 }
