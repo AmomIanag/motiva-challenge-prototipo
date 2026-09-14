@@ -151,6 +151,15 @@ export async function carregarDispositivos(): Promise<Dispositivo[]> {
   return buscarNaApi<Dispositivo[]>("/api/dispositivos");
 }
 
+export async function carregarDadosDispositivos() {
+  const [dispositivos, leituras] = await Promise.all([
+    carregarDispositivos(),
+    carregarLeituras(),
+  ]);
+
+  return { dispositivos, leituras };
+}
+
 export async function salvarLocalizacaoDispositivo(
   dispositivoId: string,
   dados: DadosLocalizacaoDispositivo,
