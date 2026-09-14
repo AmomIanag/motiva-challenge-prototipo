@@ -3,10 +3,10 @@ export type PrioridadeIntervencao = "alta" | "moderada";
 
 export interface Intervencao {
   id: string;
-  leituraId: string;
+  leituraId: string | null;
   dispositivoId: string;
   alturaCm: number;
-  statusLeitura: "cuidado" | "perigo";
+  statusLeitura: "seguro" | "cuidado" | "perigo";
   medidoEm: string;
   prioridade: PrioridadeIntervencao;
   rodovia: string | null;

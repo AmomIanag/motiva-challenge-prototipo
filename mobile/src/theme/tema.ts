@@ -5,8 +5,11 @@ const coresComuns = {
   primariaPressionada: "#4939B5",
   primariaSuave: "#EEEAFE",
   sucesso: "#187A5B",
+  sucessoSuave: "#E5F5EF",
   cuidado: "#A66608",
+  cuidadoSuave: "#FFF3D6",
   perigo: "#B63549",
+  perigoSuave: "#FDE8EC",
   textoSobrePrimaria: "#FFFFFF",
 };
 
@@ -32,8 +35,11 @@ const coresEscuras = {
   texto: "#F5F5F8",
   textoSecundario: "#B7B8C5",
   sucesso: "#55C79F",
+  sucessoSuave: "#173A30",
   cuidado: "#F2B95F",
+  cuidadoSuave: "#3D3018",
   perigo: "#F17889",
+  perigoSuave: "#43232A",
 };
 
 export const espacamento = {

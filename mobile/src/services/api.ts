@@ -10,6 +10,14 @@ export class ErroApi extends Error {
   }
 }
 
+export function descreverErroApi(erro: unknown, mensagemPadrao: string): string {
+  if (erro instanceof ErroApi) {
+    return erro.status ? `HTTP ${erro.status} — ${erro.message}` : erro.message;
+  }
+
+  return erro instanceof Error ? erro.message : mensagemPadrao;
+}
+
 export async function requisitarApi<T>(caminho: string, opcoes: RequestInit = {}): Promise<T> {
   const caminhoNormalizado = caminho.startsWith("/") ? caminho : `/${caminho}`;
   const urlApi = obterUrlApi();

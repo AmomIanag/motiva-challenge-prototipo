@@ -244,13 +244,13 @@ export async function atualizarStatusIntervencao(
       `
         UPDATE intervencoes
         SET
-          status = $2,
+          status = $2::VARCHAR(20),
           iniciada_em = CASE
-            WHEN $2 = 'em_atendimento' THEN NOW()
+            WHEN $2::VARCHAR(20) = 'em_atendimento' THEN NOW()
             ELSE iniciada_em
           END,
           concluida_em = CASE
-            WHEN $2 = 'concluida' THEN NOW()
+            WHEN $2::VARCHAR(20) = 'concluida' THEN NOW()
             ELSE concluida_em
           END,
           atualizada_em = NOW()

@@ -1,10 +1,15 @@
 import type { PropsWithChildren } from "react";
-import { ScrollView, StyleSheet } from "react-native";
+import { RefreshControl, ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { espacamento, useTema } from "@/theme/tema";
 
-export function Tela({ children }: PropsWithChildren) {
+interface PropriedadesTela extends PropsWithChildren {
+  aoAtualizar?: () => void;
+  atualizando?: boolean;
+}
+
+export function Tela({ aoAtualizar, atualizando = false, children }: PropriedadesTela) {
   const tema = useTema();
 
   return (
@@ -13,6 +18,17 @@ export function Tela({ children }: PropsWithChildren) {
         alwaysBounceVertical={false}
         contentContainerStyle={styles.conteudo}
         keyboardShouldPersistTaps="handled"
+        refreshControl={
+          aoAtualizar ? (
+            <RefreshControl
+              colors={[tema.cores.primaria]}
+              onRefresh={aoAtualizar}
+              progressBackgroundColor={tema.cores.superficie}
+              refreshing={atualizando}
+              tintColor={tema.cores.primaria}
+            />
+          ) : undefined
+        }
       >
         {children}
       </ScrollView>
