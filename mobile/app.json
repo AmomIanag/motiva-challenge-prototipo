@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Motiva — Operação em Campo",
+    "slug": "motiva-operacao-campo",
+    "scheme": "motiva-campo",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-system-ui"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "predictiveBackGestureEnabled": true
+    },
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

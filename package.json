@@ -5,7 +5,8 @@
   "description": "Plataforma acadêmica para monitoramento de vegetação às margens de rodovias.",
   "workspaces": [
     "web",
-    "backend"
+    "backend",
+    "mobile"
   ],
   "scripts": {
     "dev:web": "npm run dev --workspace @motiva/web",
@@ -14,7 +15,9 @@
     "dev:backend": "npm run dev --workspace @motiva/backend",
     "build:backend": "npm run build --workspace @motiva/backend",
     "start:backend": "npm run start --workspace @motiva/backend",
-    "typecheck:backend": "npm run typecheck --workspace @motiva/backend"
+    "typecheck:backend": "npm run typecheck --workspace @motiva/backend",
+    "dev:mobile": "npm run start --workspace @motiva/mobile",
+    "typecheck:mobile": "npm run typecheck --workspace @motiva/mobile"
   },
   "engines": {
     "node": ">=20.9.0"
