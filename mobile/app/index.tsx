@@ -24,7 +24,11 @@ export default function Inicio() {
           </Text>
         </View>
 
-        <Botao rotulo="Ver serviços" aoPressionar={() => router.push("/servicos")} />
+        <View accessibilityLabel="Áreas do aplicativo" style={styles.navegacao}>
+          <Botao rotulo="Serviços" aoPressionar={() => router.push("/servicos")} />
+          <Botao rotulo="Alertas" variante="secundario" aoPressionar={() => router.push("/alertas")} />
+          <Botao rotulo="Monitoramento" variante="secundario" aoPressionar={() => router.push("/monitoramento")} />
+        </View>
 
         <Cartao>
           <Text style={[styles.tituloCartao, { color: tema.cores.texto }]}>Plataforma integrada</Text>
@@ -51,6 +55,9 @@ const styles = StyleSheet.create({
     paddingBottom: espacamento.xl,
   },
   apresentacao: {
+    gap: espacamento.sm,
+  },
+  navegacao: {
     gap: espacamento.sm,
   },
   sobretitulo: {
